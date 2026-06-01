@@ -42,7 +42,7 @@
 
                     <td>
 
-                        {{ $producto->nombre_empresa }}
+                        {{ $producto->nombre_empresa ?? 'N/A' }}
 
                     </td>
 

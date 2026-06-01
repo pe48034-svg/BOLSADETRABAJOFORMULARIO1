@@ -25,8 +25,8 @@
             <!-- PRODUCTOS -->
             <div class="col-md-4">
 
-                <div class="card p-4 h-100 opcion-card"
-                     onclick="seleccionar('productos')">
+                <a href="{{ url('registro/productos') }}"
+                   class="card p-4 h-100 opcion-card text-decoration-none text-reset">
 
                     <h4>📦 Productos</h4>
 
@@ -34,7 +34,7 @@
                         Publica productos de tu empresa.
                     </p>
 
-                </div>
+                </a>
 
             </div>
 
@@ -42,8 +42,8 @@
             <!-- SERVICIOS -->
             <div class="col-md-4">
 
-                <div class="card p-4 h-100 opcion-card"
-                     onclick="seleccionar('servicios')">
+                <a href="{{ url('registro/servicios') }}"
+                   class="card p-4 h-100 opcion-card text-decoration-none text-reset">
 
                     <h4>🛠 Servicios</h4>
 
@@ -51,7 +51,7 @@
                         Publica servicios empresariales.
                     </p>
 
-                </div>
+                </a>
 
             </div>
 
@@ -59,8 +59,8 @@
             <!-- BOLSA TRABAJO -->
             <div class="col-md-4">
 
-                <div class="card p-4 h-100 opcion-card"
-                     onclick="seleccionar('bolsa-trabajo')">
+                <a href="{{ url('registro/bolsa-trabajo') }}"
+                   class="card p-4 h-100 opcion-card text-decoration-none text-reset">
 
                     <h4>💼 Bolsa de Trabajo</h4>
 
@@ -68,7 +68,7 @@
                         Publica ofertas laborales.
                     </p>
 
-                </div>
+                </a>
 
             </div>
 
@@ -93,15 +93,5 @@
     }
 
 </style>
-
-<script>
-
-    function seleccionar(tipo)
-    {
-    window.location.href =
-    '/BOLSADETRABAJOFORMULARIO1/public/index.php/registro/' + tipo;
-    }
-
-</script>
 
 @endsection

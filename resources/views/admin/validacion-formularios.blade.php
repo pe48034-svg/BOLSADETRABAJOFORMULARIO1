@@ -96,13 +96,13 @@
                             <td>
 
                                 <strong>
-                                    {{ $empresa->nombre_empresa }}
+                                    {{ $empresa->nombre_empresa ?? 'N/A' }}
                                 </strong>
 
                                 <br>
 
                                 <small class="text-muted">
-                                    {{ $empresa->correo_electronico }}
+                                    {{ $empresa->correo_electronico ?? 'N/A' }}
                                 </small>
 
                             </td>
@@ -195,14 +195,14 @@
 
                                             <h4 class="fw-bold mb-1">
 
-                                                {{ $empresa->nombre_empresa }}
+                                                {{ $empresa->nombre_empresa ?? 'N/A' }}
 
                                             </h4>
 
                                             <small class="text-muted">
 
                                                 RUC:
-                                                {{ $empresa->ruc }}
+                                                {{ $empresa->ruc ?? 'N/A' }}
 
                                             </small>
 

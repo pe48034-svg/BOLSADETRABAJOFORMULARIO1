@@ -279,16 +279,16 @@ public function guardarPostulacion(
     // GUARDAR PDF
     // =====================================================
 
-    $archivo = time().'_'.
-    $request->file(
-        'curriculum_pdf'
-    )->getClientOriginalName();
-
-
-    $ruta = public_path(
-        'curriculums'
+    $file = $request->file('curriculum_pdf');
+    $nombreOriginal = pathinfo(
+        $file->getClientOriginalName(),
+        PATHINFO_FILENAME
     );
+    $extension = $file->getClientExtension();
+    
+    $archivo = time().'_'.$nombreOriginal.'.'.$extension;
 
+    $ruta = public_path('curriculums');
 
     if (!file_exists($ruta)) {
 
@@ -296,16 +296,7 @@ public function guardarPostulacion(
 
     }
 
-
-    $request->file(
-        'curriculum_pdf'
-    )->move(
-
-        $ruta,
-
-        $archivo
-
-    );
+    $file->move($ruta, $archivo);
 
 
     // =====================================================
@@ -365,7 +356,7 @@ public function guardarPostulacion(
 
         'curriculum_pdf' =>
 
-        'BolsaTrabajo/curriculums'.$archivo
+        'curriculums/'.$archivo
 
     ]);
 

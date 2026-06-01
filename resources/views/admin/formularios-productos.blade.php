@@ -70,7 +70,7 @@
 
                         <td class="ps-4 fw-semibold">
 
-                            {{ $producto->nombre_empresa }}
+                            {{ $producto->nombre_empresa ?? 'N/A' }}
 
                         </td>
 

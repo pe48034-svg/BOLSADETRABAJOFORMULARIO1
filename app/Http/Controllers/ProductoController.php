@@ -227,4 +227,30 @@ class ProductoController extends Controller
         );
 
     }
+
+    // =====================================================
+    // GUARDAR SERVICIO
+    // =====================================================
+
+    public function guardarServicio(Request $request)
+    {
+
+        $request->validate([
+            'nombre_empresa' => 'required',
+            'ruc' => 'required',
+            'correo_electronico' => 'required',
+            'telefono' => 'required',
+            'nombre_servicio' => 'required',
+            'categoria' => 'required',
+            'descripcion' => 'required',
+        ]);
+
+        return redirect('/')
+            ->with(
+                'success',
+                'Servicio registrado correctamente (próximamente en módulo completo)'
+            );
+
+    }
+
 }

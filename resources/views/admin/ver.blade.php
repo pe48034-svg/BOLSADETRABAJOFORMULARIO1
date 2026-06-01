@@ -23,7 +23,7 @@
         <div class="card-body p-5">
 
             <h2 class="fw-bold mb-4">
-                {{ $empresa->nombre_empresa }}
+                {{ $empresa->nombre_empresa ?? 'N/A' }}
             </h2>
 
             <div class="row g-4">

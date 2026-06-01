@@ -51,6 +51,12 @@ Route::post(
     '/guardar-bolsa-trabajo',
     [BolsaTrabajoController::class, 'guardar']
 );
+
+// GUARDAR SERVICIO
+Route::post(
+    '/guardar-servicio',
+    [ProductoController::class, 'guardarServicio']
+);
 // LOGIN
 Route::get('/login', [AuthController::class, 'login']);
 
@@ -176,6 +182,14 @@ Route::get(
 
 );
 
+Route::get(
+
+    '/admin/postulante/visualizar/{id}',
+
+    [AdminController::class,
+    'visualizarCV']
+
+);
 
 Route::get(
 
@@ -183,6 +197,15 @@ Route::get(
 
     [AdminController::class,
     'descargarCV']
+
+);
+
+Route::post(
+
+    '/admin/eliminar-documento/{id}',
+
+    [AdminController::class,
+    'eliminarDocumento']
 
 );
 

@@ -491,7 +491,7 @@
                 </div>
 
 
-                <button class="btn btn-success">
+                <button type="submit" class="btn btn-success">
 
                     Registrar Producto
 
@@ -509,7 +509,7 @@
 
 <script>
 
-    function mostrarProducto()
+    window.mostrarProducto = function ()
     {
 
         document.getElementById(

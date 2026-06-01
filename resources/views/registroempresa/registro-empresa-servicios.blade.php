@@ -12,7 +12,11 @@
 
     <div class="card-body p-5">
 
-        <form>
+        <form action="{{ url('guardar-servicio') }}"
+              method="POST"
+              enctype="multipart/form-data">
+
+            @csrf
 
             <!-- ================================= -->
             <!-- INFORMACION EMPRESA -->
@@ -33,7 +37,9 @@
                         </label>
 
                         <input type="text"
-                               class="form-control">
+                               name="nombre_empresa"
+                               class="form-control"
+                               required>
 
                     </div>
 
@@ -44,7 +50,9 @@
                         </label>
 
                         <input type="text"
-                               class="form-control">
+                               name="ruc"
+                               class="form-control"
+                               required>
 
                     </div>
 
@@ -55,7 +63,9 @@
                         </label>
 
                         <input type="email"
-                               class="form-control">
+                               name="correo_electronico"
+                               class="form-control"
+                               required>
 
                     </div>
 
@@ -66,7 +76,9 @@
                         </label>
 
                         <input type="text"
-                               class="form-control">
+                               name="telefono"
+                               class="form-control"
+                               required>
 
                     </div>
 
@@ -93,15 +105,9 @@
                 <h4 class="mb-4">
                     Información Servicio
                 </h4>
-
-                <div class="mb-4">
-
-                    <label class="form-label">
-                        Nombre Servicio
-                    </label>
-
-                    <input type="text"
-                           class="form-control">
+name="nombre_servicio"
+                           class="form-control"
+                           required>
 
                 </div>
 
@@ -112,13 +118,26 @@
                     </label>
 
                     <input type="text"
-                           class="form-control">
+                           name="categoria"
+                           class="form-control"
+                           required>
 
                 </div>
 
                 <div class="mb-4">
 
                     <label class="form-label">
+                        Descripción
+                    </label>
+
+                    <textarea name="descripcion"
+                              class="form-control"
+                              rows="4"
+                              required></textarea>
+
+                </div>
+
+                <button type="submit"bel class="form-label">
                         Descripción
                     </label>
 
@@ -135,7 +154,7 @@
         </form>
 
     </div>
-
+window.mostrarServicio = function
 </div>
 
 

@@ -69,7 +69,7 @@
 
                     <h4 class="fw-bold text-primary mb-3">
 
-                        {{ $producto->nombre_empresa }}
+                        {{ $producto->nombre_empresa ?? 'N/A' }}
 
                     </h4>
 

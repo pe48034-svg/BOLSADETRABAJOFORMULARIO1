@@ -12,7 +12,7 @@
 
     <div class="card-body p-5">
 
-        <form action="http://localhost/BOLSADETRABAJOFORMULARIO1/public/index.php/guardar-bolsa-trabajo"
+        <form action="{{ url('guardar-bolsa-trabajo') }}"
               method="POST"
               enctype="multipart/form-data">
 

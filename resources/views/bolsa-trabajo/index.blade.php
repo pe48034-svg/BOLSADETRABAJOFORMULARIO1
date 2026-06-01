@@ -54,23 +54,23 @@
 
         <div class="mt-4">
 
-            <button class="btn btn-light fw-bold">
+            <a href="{{ url('/') }}" class="btn btn-light fw-bold">
 
                 Bolsa de Trabajo
 
-            </button>
+            </a>
 
-            <button class="btn btn-outline-light">
+            <a href="{{ url('registro-empresa') }}" class="btn btn-outline-light">
 
                 Productos
 
-            </button>
+            </a>
 
-            <button class="btn btn-outline-light">
+            <a href="{{ url('registro-empresa') }}" class="btn btn-outline-light">
 
                 Servicios
 
-            </button>
+            </a>
 
         </div>
 
@@ -181,7 +181,7 @@
 
                     <p class="text-muted mb-1">
 
-                        {{ $oferta->nombre_empresa }}
+                        {{ $oferta->nombre_empresa ?? 'N/A' }}
 
                     </p>
 

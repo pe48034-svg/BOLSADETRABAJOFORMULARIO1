@@ -73,12 +73,12 @@
                     <td>
 
                         <a
-                            href="{{ url('admin/postulante/cv/'.$postulante->id_postulacion) }}"
+                            href="{{ url('admin/postulante/visualizar/'.$postulante->id_postulacion) }}"
                             target="_blank"
                             class="btn btn-primary btn-sm"
                         >
 
-                            Ver CV
+                            Visualizar
 
                         </a>
 

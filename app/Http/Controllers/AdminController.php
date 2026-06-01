@@ -553,6 +553,22 @@ class AdminController extends Controller
             $archivo
         );
 
+        $empresaAprobada = DB::table(
+            'empresas_bolsadetrabajo_aprobadas'
+        )
+        ->where(
+            'id_aprobado',
+            $id
+        )
+        ->first();
+
+        if (
+            $empresaAprobada &&
+            !empty($empresaAprobada->documento_aprobacion_pdf) &&
+            file_exists(public_path($empresaAprobada->documento_aprobacion_pdf))
+        ) {
+            unlink(public_path($empresaAprobada->documento_aprobacion_pdf));
+        }
 
         DB::table(
             'empresas_bolsadetrabajo_aprobadas'
@@ -753,13 +769,67 @@ public function verCV($id)
 
     ->first();
 
+    if (!$cv || !file_exists(public_path($cv->curriculum_pdf))) {
+        abort(404, 'Currículum no encontrado');
+    }
 
     return response()->file(
         public_path(
             $cv->curriculum_pdf
-        )
+        ),
+        ['Content-Disposition' => 'inline']
     );
 
+}
+
+public function visualizarCV($id)
+{
+    $cv = DB::table(
+        'postulaciones'
+    )
+    ->where(
+        'id_postulacion',
+        $id
+    )
+    ->first();
+
+    if (!$cv || !file_exists(public_path($cv->curriculum_pdf))) {
+        abort(404, 'Currículum no encontrado');
+    }
+
+    return view('admin.visualizar-cv', compact('cv'));
+}
+
+public function eliminarDocumento($id)
+{
+    $empresa = DB::table(
+        'empresas_bolsadetrabajo_aprobadas'
+    )
+    ->where(
+        'id_aprobado',
+        $id
+    )
+    ->first();
+
+    if ($empresa && !empty($empresa->documento_aprobacion_pdf)) {
+        $ruta = public_path($empresa->documento_aprobacion_pdf);
+        if (file_exists($ruta)) {
+            unlink($ruta);
+        }
+
+        DB::table(
+            'empresas_bolsadetrabajo_aprobadas'
+        )
+        ->where(
+            'id_aprobado',
+            $id
+        )
+        ->update([
+            'documento_aprobacion_pdf' => null
+        ]);
+    }
+
+    return back();
 }
 
 

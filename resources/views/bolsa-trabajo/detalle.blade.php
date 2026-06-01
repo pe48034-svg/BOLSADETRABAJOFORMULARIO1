@@ -34,7 +34,7 @@
 
             <h5 class="text-muted mb-4">
 
-                {{ $oferta->nombre_empresa }}
+                {{ $oferta->nombre_empresa ?? 'N/A' }}
 
             </h5>
 

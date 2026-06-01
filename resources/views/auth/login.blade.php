@@ -56,7 +56,7 @@
 
         @endif
 
-        <form action="http://localhost/BOLSADETRABAJOFORMULARIO1/public/index.php/validar-login"
+        <form action="{{ url('validar-login') }}"
               method="POST">
 
             @csrf
