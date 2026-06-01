@@ -306,6 +306,28 @@
 
                     </div>
 
+                    <div class="col-12 mb-4">
+
+                        <label class="form-label">
+
+                            Requisitos
+
+                        </label>
+
+                        <textarea
+
+                            name="requisitos"
+
+                            class="form-control"
+
+                            rows="3"
+
+                        ></textarea>
+
+                        <small class="text-muted">Ej: años de experiencia, títulos, conocimientos o certificaciones requeridas.</small>
+
+                    </div>
+
 
                     <div class="col-md-6 mb-4">
 
@@ -509,18 +531,20 @@
 
 <script>
 
-    window.mostrarProducto = function ()
-    {
+    window.mostrarProducto = function () {
+        const container = document.getElementById('formEmpresa');
+        const controls = container.querySelectorAll('input, textarea, select');
 
-        document.getElementById(
-            'formEmpresa'
-        ).style.display = 'none';
+        for (let i = 0; i < controls.length; i++) {
+            const el = controls[i];
+            if (!el.checkValidity()) {
+                el.reportValidity();
+                return;
+            }
+        }
 
-
-        document.getElementById(
-            'formProducto'
-        ).style.display = 'block';
-
+        document.getElementById('formEmpresa').style.display = 'none';
+        document.getElementById('formProducto').style.display = 'block';
     }
 
 </script>

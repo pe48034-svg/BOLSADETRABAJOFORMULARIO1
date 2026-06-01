@@ -53,7 +53,7 @@
             <li class="nav-item mb-2">
 
                 <a
-                    href="{{ route('admin.validacion') }}"
+                    href="{{ url('admin/validacion-formularios') }}"
                     class="nav-link text-dark"
                 >
                     <i class="bi bi-file-earmark-check"></i>
@@ -66,7 +66,20 @@
             <li class="nav-item mb-2">
 
                 <a
-                    href="{{ route('admin.bolsa.trabajo') }}"
+                    href="{{ url('admin/rechazados') }}"
+                    class="nav-link text-dark"
+                >
+                    <i class="bi bi-file-earmark-x"></i>
+
+                    Rechazados
+                </a>
+
+            </li>
+
+            <li class="nav-item mb-2">
+
+                <a
+                    href="{{ url('admin/bolsa-trabajo') }}"
                     class="nav-link text-dark"
                 >
                     <i class="bi bi-briefcase"></i>

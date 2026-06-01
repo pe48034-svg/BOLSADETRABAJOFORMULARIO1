@@ -63,6 +63,9 @@ class ProductoController extends Controller
             'direccion_atencion' =>
             'required',
 
+            'requisitos' =>
+            'nullable',
+
             'imagen_producto' =>
             'required|image'
 
@@ -243,6 +246,7 @@ class ProductoController extends Controller
             'nombre_servicio' => 'required',
             'categoria' => 'required',
             'descripcion' => 'required',
+            'requisitos' => 'nullable',
         ]);
 
         return redirect('/')

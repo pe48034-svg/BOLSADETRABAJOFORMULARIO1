@@ -105,49 +105,47 @@
                 <h4 class="mb-4">
                     Información Servicio
                 </h4>
-name="nombre_servicio"
-                           class="form-control"
-                           required>
+                <div class="row">
+
+                    <div class="col-md-6 mb-4">
+
+                        <label class="form-label">Nombre Servicio</label>
+
+                        <input type="text" name="nombre_servicio" class="form-control" required>
+
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+
+                        <label class="form-label">Categoría</label>
+
+                        <input type="text" name="categoria" class="form-control" required>
+
+                    </div>
+
+                    <div class="col-12 mb-4">
+
+                        <label class="form-label">Descripción</label>
+
+                        <textarea name="descripcion" class="form-control" rows="4" required></textarea>
+
+                    </div>
+
+                    <div class="col-12 mb-4">
+
+                        <label class="form-label">Requisitos</label>
+
+                        <textarea name="requisitos" class="form-control" rows="3"></textarea>
+
+                        <small class="text-muted">Ej: experiencia mínima, certificaciones o habilidades específicas.</small>
+
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-success">Registrar Servicio</button>
+                    </div>
 
                 </div>
-
-                <div class="mb-4">
-
-                    <label class="form-label">
-                        Categoría
-                    </label>
-
-                    <input type="text"
-                           name="categoria"
-                           class="form-control"
-                           required>
-
-                </div>
-
-                <div class="mb-4">
-
-                    <label class="form-label">
-                        Descripción
-                    </label>
-
-                    <textarea name="descripcion"
-                              class="form-control"
-                              rows="4"
-                              required></textarea>
-
-                </div>
-
-                <button type="submit"bel class="form-label">
-                        Descripción
-                    </label>
-
-                    <textarea class="form-control"></textarea>
-
-                </div>
-
-                <button class="btn btn-success">
-                    Registrar Servicio
-                </button>
 
             </div>
 
@@ -163,8 +161,18 @@ window.mostrarServicio = function
 
     function mostrarServicio()
     {
-        document.getElementById('formEmpresa').style.display = 'none';
+        const container = document.getElementById('formEmpresa');
+        const controls = container.querySelectorAll('input, textarea, select');
 
+        for (let i = 0; i < controls.length; i++) {
+            const el = controls[i];
+            if (!el.checkValidity()) {
+                el.reportValidity();
+                return;
+            }
+        }
+
+        document.getElementById('formEmpresa').style.display = 'none';
         document.getElementById('formServicio').style.display = 'block';
     }
 

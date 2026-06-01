@@ -94,7 +94,7 @@
 
             <div class="row g-3">
 
-                <div class="col-md-8">
+                <div class="col-md-4">
 
                     <input
                         type="text"
@@ -119,19 +119,19 @@
 
                         </option>
 
-                        <option value="Presencial">
+                        <option value="Presencial" {{ request('modalidad') == 'Presencial' ? 'selected' : '' }}>
 
                             Presencial
 
                         </option>
 
-                        <option value="Virtual">
+                        <option value="Virtual" {{ request('modalidad') == 'Virtual' ? 'selected' : '' }}>
 
                             Virtual
 
                         </option>
 
-                        <option value="Hibrido">
+                        <option value="Hibrido" {{ request('modalidad') == 'Hibrido' ? 'selected' : '' }}>
 
                             Hibrido
 
@@ -141,7 +141,16 @@
 
                 </div>
 
-                <div class="col-md-1">
+                <div class="col-md-3">
+                    <select name="categoria" class="form-select rounded-4">
+                        <option value="">Todas las categorías</option>
+                        @foreach($categorias as $categoria)
+                            <option value="{{ $categoria }}" {{ request('categoria') == $categoria ? 'selected' : '' }}>{{ $categoria }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
 
                     <button
                         class="btn btn-primary w-100 rounded-4"
@@ -163,88 +172,66 @@
 
     <!-- OFERTAS -->
 
-    @foreach($ofertas as $oferta)
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+        @foreach($ofertas as $oferta)
+            <div class="col">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
 
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    @php
+                        $imgExt = !empty($oferta->imagen_trabajo) ? strtolower(pathinfo($oferta->imagen_trabajo, PATHINFO_EXTENSION)) : null;
+                        $imgAllowed = ['jpg','jpeg','png','gif','webp','svg'];
+                    @endphp
+                    @if(!empty($oferta->imagen_trabajo) && in_array($imgExt, $imgAllowed))
+                        <div class="mb-2 rounded-4 shadow-sm" style="background:#f8f9fa; max-height:180px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                            <img src="{{ asset($oferta->imagen_trabajo) }}" class="img-fluid" alt="Imagen de la oferta" style="max-height:180px; width:auto; max-width:100%; object-fit:contain;">
+                        </div>
+                    @endif
 
-        <div class="card-body p-4">
+                    <div class="card-body p-3 d-flex flex-column">
+                        <div class="mb-2">
+                            <h5 class="fw-bold mb-1">{{ $oferta->titulo_puesto }}</h5>
+                            <p class="text-muted mb-1">{{ $oferta->nombre_empresa ?? 'N/A' }}</p>
+                            <span class="badge bg-secondary me-1">{{ $oferta->modalidad }}</span>
+                            <span class="badge bg-info text-dark">{{ $oferta->categoria }}</span>
+                        </div>
 
-            <div class="d-flex justify-content-between">
+                        <p class="text-muted mb-2" style="font-size:.95rem;">{{ Str::limit($oferta->descripcion_puesto, 100) }}</p>
 
-                <div>
-
-                    <h3 class="fw-bold">
-
-                        {{ $oferta->titulo_puesto }}
-
-                    </h3>
-
-                    <p class="text-muted mb-1">
-
-                        {{ $oferta->nombre_empresa ?? 'N/A' }}
-
-                    </p>
-
-                    <p class="mb-2">
-
-                        {{ $oferta->ubicacion }}
-
-                        -
-                        {{ $oferta->modalidad }}
-
-                    </p>
-
-                    <h5 class="text-primary fw-bold">
-
-                        S/
-                        {{ $oferta->salario_minimo }}
-
-                        -
-
-                        S/
-                        {{ $oferta->salario_maximo }}
-
-                    </h5>
-
-                    <p class="text-muted">
-
-                        {{ Str::limit($oferta->descripcion_puesto, 120) }}
-
-                    </p>
-
+                        <div class="mt-auto">
+                                                @php
+                            $fechaLimite = \Carbon\Carbon::parse($oferta->fecha_limite_postulacion);
+                            $ahora = \Carbon\Carbon::now();
+                            if ($ahora->greaterThan($fechaLimite)) {
+                                $tiempoRestante = 'Publicación vencida';
+                                $tiempoClass = 'bg-danger';
+                            } else {
+                                $segundosRestantes = $fechaLimite->getTimestamp() - $ahora->getTimestamp();
+                                $dias = (int) floor($segundosRestantes / 86400);
+                                $horas = (int) floor(($segundosRestantes % 86400) / 3600);
+                                if ($dias > 0) {
+                                    $tiempoRestante = 'Quedan ' . $dias . ' día' . ($dias === 1 ? '' : 's');
+                                    if ($horas > 0) {
+                                        $tiempoRestante .= ' y ' . $horas . ' hora' . ($horas === 1 ? '' : 's');
+                                    }
+                                } else {
+                                    $tiempoRestante = 'Quedan ' . $horas . ' hora' . ($horas === 1 ? '' : 's');
+                                }
+                                $tiempoClass = 'bg-success';
+                            }
+                        @endphp
+                        <div class="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
+                                <span class="text-secondary small">{{ $oferta->ubicacion }}</span>
+                                <span class="badge {{ $tiempoClass }} text-white">{{ $tiempoRestante }}</span>
+                                <span class="badge bg-primary">S/ {{ number_format($oferta->salario_minimo, 2) }} - S/ {{ number_format($oferta->salario_maximo, 2) }}</span>
+                            </div>
+                            <a href="{{ url('detalle-oferta/'.$oferta->id_aprobado) }}" class="btn btn-outline-primary w-100 mb-2">Ver detalle</a>
+                            <a href="{{ url('postular/'.$oferta->id_aprobado) }}" class="btn btn-primary w-100">Postular</a>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="text-end">
-
-                    <a
-                        href="{{ url('detalle-oferta/'.$oferta->id_aprobado) }}"
-                        class="btn btn-outline-primary mb-2"
-                    >
-
-                        Ver detalle
-
-                    </a>
-
-                    <br>
-
-                    <a
-                        href="{{ url('postular/'.$oferta->id_aprobado) }}"
-                        class="btn btn-primary"
-                    >
-
-                        Postular
-
-                    </a>
-
-                </div>
-
             </div>
-
-        </div>
-
+        @endforeach
     </div>
-
-    @endforeach
 
 </div>
 

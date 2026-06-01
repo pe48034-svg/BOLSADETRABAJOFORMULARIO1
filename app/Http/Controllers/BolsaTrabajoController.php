@@ -11,52 +11,72 @@ class BolsaTrabajoController extends Controller
     public function guardar(Request $request)
     {
 
+        $request->validate([
+            'nombre_empresa' => 'required',
+            'ruc' => 'required|unique:registro_bolsadetrabajo_empresa,ruc',
+            'correo_electronico' => 'required|email',
+            'telefono' => 'required',
+            'responsable_representante' => 'required',
+            'direccion' => 'required',
+            'documento_validacion' => 'required|mimes:pdf|max:10240',
+            'titulo_puesto' => 'required',
+            'categoria' => 'required',
+            'modalidad' => 'required',
+            'ubicacion' => 'required',
+            'salario_minimo' => 'required|numeric',
+            'salario_maximo' => 'required|numeric',
+            'fecha_inicio_convocatoria' => 'required|date',
+            'fecha_limite_postulacion' => 'required|date|after_or_equal:fecha_inicio_convocatoria',
+            'descripcion_puesto' => 'required',
+            'requisitos' => 'required',
+            'imagen_trabajo' => 'required|image|max:5120',
+        ]);
+
         // =========================================
         // SUBIR DOCUMENTO VALIDACION
         // =========================================
 
-        $documento = time() . '_' .
-                      $request->documento_validacion->getClientOriginalName();
+        $documento = time() . '_' . $request->documento_validacion->getClientOriginalName();
+        $rutaDocumento = public_path('BolsaTrabajo/documentos');
 
-        $request->documento_validacion
-                ->move(public_path('documentos'), $documento);
+        if (!file_exists($rutaDocumento)) {
+            mkdir($rutaDocumento, 0777, true);
+        }
+
+        $request->documento_validacion->move($rutaDocumento, $documento);
 
 
         // =========================================
         // INSERTAR EMPRESA
         // =========================================
 
-        $idEmpresa = DB::table('registro_bolsadetrabajo_empresa')
-        ->insertGetId([
-
-            'nombre_empresa' => $request->nombre_empresa,
-
-            'ruc' => $request->ruc,
-
-            'correo_electronico' => $request->correo_electronico,
-
-            'telefono' => $request->telefono,
-
-            'responsable_representante'
-                => $request->responsable_representante,
-
-            'direccion' => $request->direccion,
-
-            'documento_validacion'
-                => 'BolsaTrabajo/documentos' . $documento
-
-        ]);
+        try {
+            $idEmpresa = DB::table('registro_bolsadetrabajo_empresa')
+                ->insertGetId([
+                    'nombre_empresa' => $request->nombre_empresa,
+                    'ruc' => $request->ruc,
+                    'correo_electronico' => $request->correo_electronico,
+                    'telefono' => $request->telefono,
+                    'responsable_representante' => $request->responsable_representante,
+                    'direccion' => $request->direccion,
+                    'documento_validacion' => 'BolsaTrabajo/documentos/'.$documento
+                ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            $code = $e->errorInfo[1] ?? null;
+            if ($code == 1062) {
+                return back()->withInput()->withErrors(['ruc' => 'El RUC ya está registrado.'])->with('error', 'Error al guardar: datos duplicados.');
+            }
+            return back()->withInput()->withErrors(['database' => 'Error al guardar la empresa.'])->with('error', 'Error al guardar la publicación.');
+        }
 
 
         // =========================================
         // SUBIR IMAGEN TRABAJO
         // =========================================
 
-        $imagen = time() . '_' .
-                   $request->imagen_trabajo->getClientOriginalName();
+        $imagen = time() . '_' . $request->imagen_trabajo->getClientOriginalName();
 
-        $request->imagen_trabajo
-                ->move(public_path('BolsaTrabajo/imagenes'), $imagen);
+        $request->imagen_trabajo->move(public_path('BolsaTrabajo/imagenes'), $imagen);
 
 
         // =========================================
@@ -75,8 +95,7 @@ class BolsaTrabajoController extends Controller
 
             'requisitos' => $request->requisitos,
 
-            'imagen_trabajo'
-                => 'BolsaTrabajo/imagenes' . $imagen,
+            'imagen_trabajo' => 'BolsaTrabajo/imagenes/'.$imagen,
 
             'modalidad' => $request->modalidad,
 
@@ -101,7 +120,7 @@ class BolsaTrabajoController extends Controller
 
         return back()->with(
             'success',
-            'Publicación registrada correctamente'
+            'Publicación registrada correctamente. La aprobación puede demorar 1-2 días hábiles.'
         );
 
     }
@@ -157,6 +176,22 @@ public function inicio(Request $request)
 
     }
 
+    // =====================================================
+    // FILTRO CATEGORÍA
+    // =====================================================
+
+    if ($request->categoria) {
+
+        $query->where(
+
+            'categoria',
+
+            $request->categoria
+
+        );
+
+    }
+
 
     $ofertas = $query
 
@@ -168,11 +203,16 @@ public function inicio(Request $request)
     ->get();
 
 
+    $categorias = DB::table('publicaciones_publicas')
+        ->distinct()
+        ->orderBy('categoria')
+        ->pluck('categoria');
+
     return view(
 
         'bolsa-trabajo.index',
 
-        compact('ofertas')
+        compact('ofertas', 'categorias')
 
     );
 
@@ -284,7 +324,7 @@ public function guardarPostulacion(
         $file->getClientOriginalName(),
         PATHINFO_FILENAME
     );
-    $extension = $file->getClientExtension();
+    $extension = $file->getClientOriginalExtension();
     
     $archivo = time().'_'.$nombreOriginal.'.'.$extension;
 

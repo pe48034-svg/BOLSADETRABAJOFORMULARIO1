@@ -39,6 +39,11 @@
             📄 Validación de Formularios
         </a>
 
+        <a href="{{ url('admin/rechazados') }}"
+           class="d-block mb-4 text-dark text-decoration-none">
+            ❌ Rechazados
+        </a>
+
         <a href="{{ url('admin/bolsa-trabajo') }}"
            class="d-block mb-4 text-dark text-decoration-none">
             💼 Bolsa de Trabajo
@@ -195,6 +200,49 @@
 
                                             <h4 class="fw-bold mb-1">
 
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <h6 class="fw-semibold">Documento de validación</h6>
+
+                                                    @if(!empty($empresa->documento_validacion))
+                                                        <a href="{{ asset($empresa->documento_validacion) }}" target="_blank" class="btn btn-outline-primary btn-sm mb-2">📄 Ver PDF validación</a>
+                                                        <div class="ratio ratio-4x3">
+                                                            <iframe src="{{ asset($empresa->documento_validacion) }}" frameborder="0"></iframe>
+                                                        </div>
+                                                    @else
+                                                        <p class="text-muted">No se subió documento de validación.</p>
+                                                    @endif
+
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <h6 class="fw-semibold">Imagen de publicación</h6>
+
+                                                    @if(!empty($empresa->imagen_trabajo))
+                                                        @php
+                                                            $ext = strtolower(pathinfo($empresa->imagen_trabajo, PATHINFO_EXTENSION));
+                                                            $allowed = ['jpg','jpeg','png','gif','webp','svg'];
+                                                        @endphp
+                                                        @if(in_array($ext, $allowed))
+                                                            <div class="mb-2">
+                                                                <a href="{{ asset($empresa->imagen_trabajo) }}" target="_blank" class="btn btn-outline-success btn-sm">🖼️ Ver imagen</a>
+                                                            </div>
+                                                            <img src="{{ asset($empresa->imagen_trabajo) }}" class="img-fluid rounded-2" alt="Imagen trabajo">
+                                                        @elseif($ext === 'pdf')
+                                                            <a href="{{ asset($empresa->imagen_trabajo) }}" target="_blank" class="btn btn-outline-primary btn-sm mb-2">📄 Abrir PDF</a>
+                                                            <div class="ratio ratio-4x3">
+                                                                <iframe src="{{ asset($empresa->imagen_trabajo) }}" frameborder="0"></iframe>
+                                                            </div>
+                                                        @else
+                                                            <a href="{{ asset($empresa->imagen_trabajo) }}" target="_blank" class="btn btn-outline-secondary btn-sm">📎 Abrir archivo adjunto</a>
+                                                        @endif
+                                                    @else
+                                                        <p class="text-muted">No se subió imagen de publicación.</p>
+                                                    @endif
+
+                                                </div>
+                                            </div>
+
                                                 {{ $empresa->nombre_empresa ?? 'N/A' }}
 
                                             </h4>
@@ -326,15 +374,23 @@
 
                                             </p>
 
-                                            <p>
-
-                                                <strong>
-                                                    Requisitos:
-                                                </strong>
-
-                                                {{ $empresa->requisitos }}
-
-                                            </p>
+                                            <div>
+                                                <strong>Requisitos:</strong>
+                                                @if(!empty($empresa->requisitos))
+                                                    @php
+                                                        $lines = preg_split('/\r\n|\r|\n/', trim($empresa->requisitos));
+                                                    @endphp
+                                                    <ul class="mb-0">
+                                                        @foreach($lines as $line)
+                                                            @if(trim($line) !== '')
+                                                                <li>{{ $line }}</li>
+                                                            @endif
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    <p class="text-muted mb-0">No especificado.</p>
+                                                @endif
+                                            </div>
 
                                             <div class="d-flex gap-3 flex-wrap">
 
