@@ -249,7 +249,6 @@ class DocumentController extends Controller
             }
 
             $registroData = [
-                'id_empresa' => $activa->id_empresa_original,
                 'nombre_empresa' => $activa->nombre_empresa,
                 'ruc' => $activa->ruc,
                 'correo_electronico' => $activa->correo_electronico,
@@ -260,18 +259,22 @@ class DocumentController extends Controller
                 'estado' => 'PENDIENTE',
             ];
 
-            if (Schema::hasColumn('registro_bolsadetrabajo_empresa', 'created_at')) {
-                $registroData['created_at'] = now();
-            }
             if (Schema::hasColumn('registro_bolsadetrabajo_empresa', 'updated_at')) {
                 $registroData['updated_at'] = now();
             }
 
-            DB::table('registro_bolsadetrabajo_empresa')->insert($registroData);
+            $existingregistro = DB::table('registro_bolsadetrabajo_empresa')->where('id_empresa', $activa->id_empresa_original)->first();
+            if ($existingregistro) {
+                DB::table('registro_bolsadetrabajo_empresa')->where('id_empresa', $activa->id_empresa_original)->update($registroData);
+            } else {
+                $registroData['id_empresa'] = $activa->id_empresa_original;
+                if (Schema::hasColumn('registro_bolsadetrabajo_empresa', 'created_at')) {
+                    $registroData['created_at'] = now();
+                }
+                DB::table('registro_bolsadetrabajo_empresa')->insert($registroData);
+            }
 
             $publicacionData = [
-                'id_publicacion' => $activa->id_publicacion_original,
-                'id_empresa' => $activa->id_empresa_original,
                 'titulo_puesto' => $activa->titulo_puesto,
                 'descripcion_puesto' => $activa->descripcion_puesto,
                 'requisitos' => $activa->requisitos,
@@ -283,27 +286,36 @@ class DocumentController extends Controller
                 'ubicacion' => $activa->ubicacion,
                 'fecha_inicio_convocatoria' => $activa->fecha_inicio_convocatoria,
                 'fecha_limite_postulacion' => $activa->fecha_limite_postulacion,
-                'estado' => 'PENDIENTE',
             ];
 
-            if (Schema::hasColumn('publicaciones_trabajo', 'created_at')) {
-                $publicacionData['created_at'] = now();
+            if (Schema::hasColumn('publicaciones_trabajo', 'estado')) {
+                $publicacionData['estado'] = 'PENDIENTE';
             }
+
             if (Schema::hasColumn('publicaciones_trabajo', 'updated_at')) {
                 $publicacionData['updated_at'] = now();
             }
 
-            DB::table('publicaciones_trabajo')->insert($publicacionData);
+            $existingpublicacion = DB::table('publicaciones_trabajo')->where('id_publicacion', $activa->id_publicacion_original)->first();
+            if ($existingpublicacion) {
+                DB::table('publicaciones_trabajo')->where('id_publicacion', $activa->id_publicacion_original)->update($publicacionData);
+            } else {
+                $publicacionData['id_publicacion'] = $activa->id_publicacion_original;
+                $publicacionData['id_empresa'] = $activa->id_empresa_original;
+                if (Schema::hasColumn('publicaciones_trabajo', 'created_at')) {
+                    $publicacionData['created_at'] = now();
+                }
+                DB::table('publicaciones_trabajo')->insert($publicacionData);
+            }
 
             if (Schema::hasColumn('empresas_bolsadetrabajo_rechazadas', 'veces_restaurado')) {
                 DB::table('empresas_bolsadetrabajo_rechazadas')
                     ->where('id_rechazado', $id)
                     ->update(['veces_restaurado' => intval($activa->veces_restaurado ?? 0) + 1]);
-
-                if (intval($activa->veces_restaurado ?? 0) + 1 >= 2) {
-                    DB::table('empresas_bolsadetrabajo_rechazadas')->where('id_rechazado', $id)->delete();
-                }
             }
+
+            // Eliminar el registro rechazado después de restaurar
+            DB::table('empresas_bolsadetrabajo_rechazadas')->where('id_rechazado', $id)->delete();
 
             return back()->with('success', 'La oferta fue enviada nuevamente a validación.');
         }

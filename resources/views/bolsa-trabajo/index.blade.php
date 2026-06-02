@@ -60,13 +60,13 @@
 
             </a>
 
-            <a href="{{ url('registro-empresa') }}" class="btn btn-outline-light">
+            <a href="{{ url('registro/productos') }}" class="btn btn-outline-light">
 
                 Productos
 
             </a>
 
-            <a href="{{ url('registro-empresa') }}" class="btn btn-outline-light">
+            <a href="{{ url('registro/servicios') }}" class="btn btn-outline-light">
 
                 Servicios
 

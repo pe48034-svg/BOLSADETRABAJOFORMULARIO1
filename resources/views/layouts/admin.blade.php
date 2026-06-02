@@ -58,7 +58,7 @@
                 >
                     <i class="bi bi-file-earmark-check"></i>
 
-                    Validación de Formularios
+                    Validación de Formularios de Bolsa de Trabajo
                 </a>
 
             </li>
@@ -71,7 +71,7 @@
                 >
                     <i class="bi bi-file-earmark-x"></i>
 
-                    Rechazados
+                    Rechazados Bolsa de Trabajo
                 </a>
 
             </li>

@@ -10,8 +10,40 @@ use App\Http\Controllers\ProductoController;
 
 Route::get(
     '/',
-    [BolsaTrabajoController::class, 'inicio']
+    function () {
+        return redirect('/publicidad/bolsa-trabajo');
+    }
 );
+
+Route::get(
+    '/publicidad',
+    function () {
+        return redirect('/publicidad/bolsa-trabajo');
+    }
+);
+
+Route::get(
+    '/publicidad/bolsa-trabajo',
+    [BolsaTrabajoController::class, 'publicidadBolsaTrabajo']
+);
+
+Route::get(
+    '/publicidad/productos',
+    [ProductoController::class, 'publicidadProductos']
+);
+
+Route::get(
+    '/publicidad/productos/{id}',
+    [ProductoController::class, 'detalleProducto']
+);
+
+Route::get(
+    '/publicidad/servicios',
+    function () {
+        return view('publicidad.servicios');
+    }
+);
+
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/validar-login', [AuthController::class, 'validar']);
 Route::get('/logout', [AuthController::class, 'logout']);
@@ -85,11 +117,6 @@ Route::post('/admin/subir-documento/{id}', [\App\Http\Controllers\Admin\Document
 // =====================================================
 
 Route::get(
-    '/',
-    [BolsaTrabajoController::class, 'inicio']
-);
-
-Route::get(
     '/detalle-oferta/{id}',
     [BolsaTrabajoController::class, 'detalle']
 );
@@ -143,6 +170,20 @@ Route::get(
 
 );
 
+Route::get(
+
+    '/registro/servicios',
+
+    function () {
+
+        return view(
+            'registroempresa.registro-empresa-servicios'
+        );
+
+    }
+
+);
+
 
 // =====================================================
 // GUARDAR PRODUCTO
@@ -154,6 +195,15 @@ Route::post(
 
     [ProductoController::class,
     'guardar']
+
+);
+
+Route::post(
+
+    '/guardar-servicio',
+
+    [ProductoController::class,
+    'guardarServicio']
 
 );
 
@@ -170,6 +220,22 @@ Route::get('/admin/formularios-productos', [ProductController::class, 'formulari
 // =====================================================
 
 Route::get('/admin/ver-producto/{id}', [ProductController::class, 'verProducto']);
+
+// =====================================================
+// PRODUCTOS APROBADOS
+// =====================================================
+
+Route::get('/admin/productos', [ProductController::class, 'productos']);
+
+Route::get('/admin/ver-producto-aprobado/{id}', [ProductController::class, 'verProductoAprobado']);
+
+// =====================================================
+// PRODUCTOS RECHAZADOS
+// =====================================================
+
+Route::get('/admin/productos-rechazados', [ProductController::class, 'rechazados']);
+
+Route::post('/admin/productos/restaurar/{id}', [ProductController::class, 'restaurar']);
 
 
 // =====================================================
@@ -196,10 +262,3 @@ Route::post(
     [\App\Http\Controllers\Admin\ProductController::class, 'rechazarProducto']
 
 );
-
-
-// =====================================================
-// PRODUCTOS APROBADOS
-// =====================================================
-
-Route::get('/admin/productos', [ProductController::class, 'productos']);

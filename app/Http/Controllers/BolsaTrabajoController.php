@@ -218,6 +218,18 @@ public function inicio(Request $request)
 
 }
 
+public function publicidadBolsaTrabajo()
+{
+    $hoy = \Carbon\Carbon::now()->startOfDay();
+    
+    $ofertas = DB::table('publicaciones_publicas')
+        ->where('fecha_limite_postulacion', '>=', $hoy)
+        ->orderBy('fecha_publicacion_publica', 'desc')
+        ->get();
+
+    return view('publicidad.bolsa-trabajo', compact('ofertas'));
+}
+
 
     // =====================================================
     // VER DETALLE

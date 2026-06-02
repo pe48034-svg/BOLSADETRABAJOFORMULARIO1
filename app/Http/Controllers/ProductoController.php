@@ -25,7 +25,7 @@ class ProductoController extends Controller
             'required',
 
             'ruc' =>
-            'required',
+            'required|digits:11',
 
             'correo_electronico' =>
             'required',
@@ -240,7 +240,7 @@ class ProductoController extends Controller
 
         $request->validate([
             'nombre_empresa' => 'required',
-            'ruc' => 'required',
+            'ruc' => 'required|digits:11',
             'correo_electronico' => 'required',
             'telefono' => 'required',
             'nombre_servicio' => 'required',
@@ -255,6 +255,36 @@ class ProductoController extends Controller
                 'Servicio registrado correctamente (próximamente en módulo completo)'
             );
 
+    }
+
+    // =====================================================
+    // PUBLICIDAD PRODUCTOS
+    // =====================================================
+
+    public function publicidadProductos()
+    {
+        $hoy = \Carbon\Carbon::now()->startOfDay();
+
+        $productos = DB::table('productos_publicos')
+            ->where('estado', 'Publicado')
+            ->where('fecha_fin', '>=', $hoy)
+            ->orderBy('fecha_publicacion', 'desc')
+            ->get();
+
+        return view('publicidad.productos', compact('productos'));
+    }
+
+    public function detalleProducto($id)
+    {
+        $producto = DB::table('productos_publicos')
+            ->where('id_publico_producto', $id)
+            ->first();
+
+        if (!$producto) {
+            abort(404);
+        }
+
+        return view('publicidad.producto-detalle', compact('producto'));
     }
 
 }

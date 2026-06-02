@@ -29,11 +29,11 @@
         <br><br>
 
         <a href="{{ url('admin/validacion-formularios') }}" class="d-block mb-4 text-dark text-decoration-none">
-            📄 Validación de Formularios
+            📄 Validación de Formularios de Bolsa de Trabajo
         </a>
 
         <a href="{{ url('admin/rechazados') }}" class="d-block mb-4 text-dark text-decoration-none">
-            ❌ Rechazados
+            ❌ Rechazados Bolsa de Trabajo
         </a>
 
         <a href="{{ url('admin/bolsa-trabajo') }}" class="d-block mb-4 text-dark text-decoration-none">
@@ -52,7 +52,7 @@
 
     <div class="flex-grow-1 p-4">
 
-        <h1 class="fw-bold mb-4">Ofertas Rechazadas</h1>
+        <h1 class="fw-bold mb-4">Rechazados Bolsa de Trabajo</h1>
 
         @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -63,12 +63,17 @@
 
         <div class="card shadow border-0 rounded-4">
             <div class="card-body">
-                <table class="table align-middle">
+                <table class="table align-middle table-sm">
                     <thead>
                     <tr>
                         <th>Empresa</th>
+                        <th>RUC</th>
+                        <th>Teléfono</th>
                         <th>Oferta</th>
-                        <th>Veces restaurado</th>
+                        <th>Categoría</th>
+                        <th>Ubicación</th>
+                        <th>Documento</th>
+                        <th>Fecha Rechazo</th>
                         <th>Acciones</th>
                     </tr>
                     </thead>
@@ -80,25 +85,42 @@
                                 <br>
                                 <small class="text-muted">{{ $empresa->correo_electronico ?? 'N/A' }}</small>
                             </td>
+                            <td>{{ $empresa->ruc ?? 'N/A' }}</td>
+                            <td>{{ $empresa->telefono ?? 'N/A' }}</td>
                             <td>{{ $empresa->titulo_puesto }}</td>
+                            <td>{{ $empresa->categoria ?? 'N/A' }}</td>
+                            <td>{{ $empresa->ubicacion ?? 'N/A' }}</td>
+                            <td>
+                                @if(!empty($empresa->documento_validacion))
+                                    <a href="{{ asset($empresa->documento_validacion) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                        Ver
+                                    </a>
+                                @else
+                                    <span class="text-muted">N/A</span>
+                                @endif
+                            </td>
                             <td>
                                 @php
-                                    $veces = intval($empresa->veces_restaurado ?? 0);
+                                    $fecha = $empresa->fecha_rechazo ?? null;
+                                    if ($fecha) {
+                                        echo \Carbon\Carbon::parse($fecha)->format('d/m/Y');
+                                    } else {
+                                        echo 'N/A';
+                                    }
                                 @endphp
-                                <span class="badge bg-info text-dark">{{ $veces }} / 2</span>
                             </td>
                             <td>
                                 <form action="{{ url('admin/restaurar/' . ($empresa->id_rechazado ?? $empresa->id_empresa)) }}" method="POST" style="display:inline-block;">
                                     @csrf
-                                    <button type="submit" class="btn btn-success btn-sm" {{ $veces >= 2 ? 'disabled' : '' }}>
-                                        {{ $veces >= 2 ? 'No disponible' : 'Restaurar' }}
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        Restaurar
                                     </button>
                                 </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center text-muted">No hay ofertas rechazadas.</td>
+                            <td colspan="9" class="text-center text-muted">No hay ofertas rechazadas.</td>
                         </tr>
                     @endforelse
                     </tbody>

@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8">
 
-    <title>Validación de Formularios</title>
+    <title>Validación de Formularios de Bolsa de Trabajo</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -36,12 +36,12 @@
 
         <a href="{{ url('admin/validacion-formularios') }}"
            class="d-block mb-4 text-dark text-decoration-none">
-            📄 Validación de Formularios
+            📄 Validación de Formularios de Bolsa de Trabajo
         </a>
 
         <a href="{{ url('admin/rechazados') }}"
            class="d-block mb-4 text-dark text-decoration-none">
-            ❌ Rechazados
+            ❌ Rechazados Bolsa de Trabajo
         </a>
 
         <a href="{{ url('admin/bolsa-trabajo') }}"
@@ -67,14 +67,14 @@
     <div class="flex-grow-1 p-4">
 
         <h1 class="fw-bold mb-4">
-            Validación de Formularios
+            Validación de Formularios de Bolsa de Trabajo
         </h1>
 
         <div class="card shadow border-0 rounded-4">
 
             <div class="card-body">
 
-                <table class="table align-middle">
+                <table class="table align-middle table-sm">
 
                     <thead>
 
@@ -82,7 +82,15 @@
 
                             <th>Empresa</th>
 
+                            <th>RUC</th>
+
+                            <th>Teléfono</th>
+
                             <th>Oferta</th>
+
+                            <th>Categoría</th>
+
+                            <th>Ubicación</th>
 
                             <th>Estado</th>
 
@@ -114,7 +122,31 @@
 
                             <td>
 
+                                {{ $empresa->ruc ?? 'N/A' }}
+
+                            </td>
+
+                            <td>
+
+                                {{ $empresa->telefono ?? 'N/A' }}
+
+                            </td>
+
+                            <td>
+
                                 {{ $empresa->titulo_puesto }}
+
+                            </td>
+
+                            <td>
+
+                                {{ $empresa->categoria ?? 'N/A' }}
+
+                            </td>
+
+                            <td>
+
+                                {{ $empresa->ubicacion ?? 'N/A' }}
 
                             </td>
 

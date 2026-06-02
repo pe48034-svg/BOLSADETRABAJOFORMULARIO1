@@ -52,6 +52,9 @@
                         <input type="text"
                                name="ruc"
                                class="form-control"
+                               maxlength="11"
+                               pattern="\d{11}"
+                               title="Ingrese 11 dígitos de RUC"
                                required>
 
                     </div>
