@@ -59,7 +59,8 @@ class BolsaTrabajoController extends Controller
                     'telefono' => $request->telefono,
                     'responsable_representante' => $request->responsable_representante,
                     'direccion' => $request->direccion,
-                    'documento_validacion' => 'BolsaTrabajo/documentos/'.$documento
+                    'documento_validacion' => 'BolsaTrabajo/documentos/'.$documento,
+                    'estado' => 'PENDIENTE'
                 ]);
         } catch (\Illuminate\Database\QueryException $e) {
             $code = $e->errorInfo[1] ?? null;

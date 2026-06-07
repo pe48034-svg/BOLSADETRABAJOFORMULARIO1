@@ -332,6 +332,12 @@
                     </div>
                 @endif
 
+                @php
+                    $fechaHoy = \Carbon\Carbon::today();
+                    $fechaFinDefault = $fechaHoy->copy()->addMonth();
+                    $fechaFinMax = $fechaHoy->copy()->addYear();
+                @endphp
+
                 <form action="{{ url('guardar-servicio') }}" method="POST" enctype="multipart/form-data" id="mainForm">
                     @csrf
 
@@ -361,6 +367,22 @@
                             <div class="form-group-custom">
                                 <label class="form-label-custom">☎️ Teléfono <span style="color: #e74c3c;">*</span></label>
                                 <input type="text" name="telefono" class="form-control-custom" required placeholder="Ej: 044 123456">
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">👤 Responsable / Representante</label>
+                                <input type="text" name="responsable_representante" class="form-control-custom" placeholder="Nombre del responsable">
+                            </div>
+
+                            <div class="form-group-custom row-full">
+                                <label class="form-label-custom">📍 Dirección</label>
+                                <input type="text" name="direccion" class="form-control-custom" placeholder="Dirección de la empresa">
+                            </div>
+
+                            <div class="form-group-custom row-full">
+                                <label class="form-label-custom">📄 Documento de Validación (PDF) <span style="color: #e74c3c;">*</span></label>
+                                <input type="file" name="documento_validacion" class="form-control-custom" accept="application/pdf" required>
+                                <div class="helper-text">Requerido. PDF máximo 10MB.</div>
                             </div>
                         </div>
 
@@ -394,10 +416,51 @@
                                 <div class="helper-text">Sé específico para atraer más clientes interesados en tus servicios</div>
                             </div>
 
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">📌 Ubicación / Ciudad</label>
+                                <input type="text" name="ubicacion_ciudad" class="form-control-custom" placeholder="Ej: Lima">
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">☎️ Teléfono de Contacto</label>
+                                <input type="text" name="telefono_contacto" class="form-control-custom" placeholder="Teléfono de contacto">
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">🌐 Redes Sociales</label>
+                                <input type="text" name="redes_sociales" class="form-control-custom" placeholder="URLs o redes sociales">
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">📧 Correo de Contacto</label>
+                                <input type="email" name="correo_contacto" class="form-control-custom" placeholder="correo@contacto.com">
+                            </div>
+
                             <div class="form-group-custom row-full">
-                                <label class="form-label-custom">✅ Requisitos o Consideraciones Especiales</label>
-                                <textarea name="requisitos" class="form-control-custom textarea-custom" placeholder="Ej: Experiencia mínima, certificaciones, disponibilidad horaria, requerimientos del cliente..."></textarea>
-                                <div class="helper-text">Opcional: información adicional que los clientes deben conocer</div>
+                                <label class="form-label-custom">📍 Dirección de Atención</label>
+                                <input type="text" name="direccion_atencion" class="form-control-custom" placeholder="Dirección donde se presta el servicio">
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">🖼️ Imagen del Servicio</label>
+                                <input type="file" name="imagen_servicio" class="form-control-custom" accept="image/*">
+                                <div class="helper-text">Opcional. Imagen representativa del servicio (max 5MB).</div>
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">⏰ Horario de Atención</label>
+                                <input type="text" name="horario_atencion" class="form-control-custom" placeholder="Ej: Lun-Vie 9:00-18:00">
+                            </div>
+
+                            <input type="hidden" name="fecha_inicio" value="{{ $fechaHoy->format('Y-m-d') }}">
+                            <div class="form-group-custom row-full">
+                                <div class="helper-text" style="margin-bottom: 20px; font-weight: 600;">Fecha de inicio automática: {{ $fechaHoy->format('d/m/Y') }}</div>
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">📅 Fecha Fin</label>
+                                <input type="date" name="fecha_fin" class="form-control-custom" value="{{ old('fecha_fin', $fechaFinDefault->format('Y-m-d')) }}" min="{{ $fechaHoy->format('Y-m-d') }}" max="{{ $fechaFinMax->format('Y-m-d') }}">
+                                <div class="helper-text">La fecha fin será dentro de 1 mes por defecto y como máximo hasta {{ $fechaFinMax->format('d/m/Y') }}.</div>
                             </div>
                         </div>
 
@@ -452,7 +515,5 @@
         window.scrollTo(0, 0);
     }
 </script>
-
-@endsection
 
 @endsection

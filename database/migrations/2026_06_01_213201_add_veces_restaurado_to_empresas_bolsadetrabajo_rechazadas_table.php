@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('empresas_bolsadetrabajo_rechazadas', function (Blueprint $table) {
-            $table->integer('veces_restaurado')->default(0)->after('fecha_rechazo');
+            if (!Schema::hasColumn('empresas_bolsadetrabajo_rechazadas', 'veces_restaurado')) {
+                $table->integer('veces_restaurado')->default(0)->after('fecha_rechazo');
+            }
         });
     }
 

@@ -240,10 +240,10 @@
 
                         <div class="info-footer">
                             <div class="contact-info">
-                                📧 {{ Str::limit($servicio->correo_electronico ?? 'No disponible', 25) }}
+                                📧 {{ Str::limit($servicio->correo_contacto ?? 'No disponible', 25) }}
                             </div>
                             <div class="contact-info">
-                                ☎️ {{ $servicio->telefono ?? 'No disponible' }}
+                                ☎️ {{ $servicio->telefono_contacto ?? 'No disponible' }}
                             </div>
                         </div>
 
@@ -253,7 +253,7 @@
                             </div>
                         @endif
 
-                        <a href="#contact-{{ $servicio->id }}" class="btn-custom" onclick="scrollToContact('{{ $servicio->nombre_empresa }}', '{{ $servicio->telefono }}')">
+                        <a href="#contact-{{ $servicio->id }}" class="btn-custom" onclick="scrollToContact('{{ $servicio->nombre_empresa }}', '{{ $servicio->telefono_contacto ?? 'No disponible' }}')">
                             Contactar →
                         </a>
                     </div>

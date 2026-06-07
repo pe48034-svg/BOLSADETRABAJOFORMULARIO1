@@ -59,7 +59,14 @@ Route::get(
 Route::get(
     '/publicidad/servicios',
     function () {
-        return view('publicidad.servicios');
+        $servicios = DB::table('servicios_publicos')
+            ->select('servicios_publicos.*', 'id_publico_servicio as id')
+            ->where('estado', 'Publicado')
+            ->whereDate('fecha_fin', '>=', date('Y-m-d'))
+            ->orderByDesc('fecha_publicacion')
+            ->get();
+
+        return view('publicidad.servicios', compact('servicios'));
     }
 );
 
@@ -284,7 +291,16 @@ Route::post('/admin/productos/restaurar/{id}', [ProductController::class, 'resta
 // =====================================================
 
 Route::get('/admin/formularios-servicios', [ServiceController::class, 'formulariosServicios']);
+Route::get('/admin/ver-servicio/{id}', [ServiceController::class, 'verServicio']);
+Route::post('/admin/aprobar-servicio/{id}', [ServiceController::class, 'aprobarServicio']);
+Route::post('/admin/rechazar-servicio/{id}', [ServiceController::class, 'rechazarServicio']);
+Route::post('/admin/servicios/restaurar/{id}', [ServiceController::class, 'restaurarServicio']);
 Route::get('/admin/publicaciones-servicios', [ServiceController::class, 'publicacionesServicios']);
+Route::get('/admin/ver-publicacion-servicio/{id}', [ServiceController::class, 'verPublicacionServicio']);
+Route::post('/admin/publicaciones-servicios/desactivar/{id}', [ServiceController::class, 'desactivarPublicacionServicio']);
+Route::post('/admin/publicaciones-servicios/reactivar/{id}', [ServiceController::class, 'reactivarPublicacionServicio']);
+Route::delete('/admin/publicaciones-servicios/borrar/{id}', [ServiceController::class, 'borrarPublicacionServicio']);
+Route::get('/admin/ver-servicio-rechazado/{id}', [ServiceController::class, 'verServicioRechazado']);
 Route::get('/admin/servicios-rechazados', [ServiceController::class, 'rechazados']);
 
 

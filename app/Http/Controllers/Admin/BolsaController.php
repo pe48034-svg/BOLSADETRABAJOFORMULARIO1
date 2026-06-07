@@ -30,7 +30,11 @@ class BolsaController extends Controller
             );
 
         if (Schema::hasColumn('registro_bolsadetrabajo_empresa', 'estado')) {
-            $query->where('e.estado', 'PENDIENTE');
+            $query->where(function ($subQuery) {
+                $subQuery->where('e.estado', 'PENDIENTE')
+                    ->orWhere('e.estado', 'Pendiente')
+                    ->orWhereNull('e.estado');
+            });
         }
 
         $empresas = $query->get();

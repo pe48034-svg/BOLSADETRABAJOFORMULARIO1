@@ -216,19 +216,113 @@ class ProductoController extends Controller
         $request->validate([
             'nombre_empresa' => 'required',
             'ruc' => 'required|digits:11',
-            'correo_electronico' => 'required',
+            'correo_electronico' => 'required|email',
             'telefono' => 'required',
+            'responsable_representante' => 'nullable',
+            'direccion' => 'nullable',
+            'documento_validacion' => 'required|mimes:pdf|max:10240',
             'nombre_servicio' => 'required',
             'categoria' => 'required',
             'descripcion' => 'required',
-            'requisitos' => 'nullable',
+            'ubicacion_ciudad' => 'nullable',
+            'telefono_contacto' => 'nullable',
+            'redes_sociales' => 'nullable',
+            'correo_contacto' => 'nullable|email',
+            'direccion_atencion' => 'nullable',
+            'imagen_servicio' => 'nullable|image|max:5120',
+            'horario_atencion' => 'nullable',
+            'fecha_inicio' => 'nullable|date',
+            'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
         ]);
 
-        return redirect('/')
-            ->with(
-                'success',
-                'Servicio registrado correctamente (próximamente en módulo completo)'
-            );
+        // Manejar subida de archivos si existen
+        $rutaPDF = null;
+        if ($request->hasFile('documento_validacion')) {
+            $pdf = time() . '_' . $request->file('documento_validacion')->getClientOriginalName();
+            $rutaPDFDir = public_path('Servicios/documentosServicios');
+            if (!file_exists($rutaPDFDir)) {
+                mkdir($rutaPDFDir, 0777, true);
+            }
+            $request->file('documento_validacion')->move($rutaPDFDir, $pdf);
+            $rutaPDF = 'Servicios/documentosServicios/' . $pdf;
+        }
+
+        $rutaImagen = null;
+        if ($request->hasFile('imagen_servicio')) {
+            $imagen = time() . '_' . $request->file('imagen_servicio')->getClientOriginalName();
+            $rutaImagenDir = public_path('Servicios/imagenesServicios');
+            if (!file_exists($rutaImagenDir)) {
+                mkdir($rutaImagenDir, 0777, true);
+            }
+            $request->file('imagen_servicio')->move($rutaImagenDir, $imagen);
+            $rutaImagen = 'Servicios/imagenesServicios/' . $imagen;
+        }
+
+        $fechaInicio = $request->filled('fecha_inicio')
+            ? Carbon::parse($request->fecha_inicio)
+            : Carbon::today();
+
+        $fechaFin = $request->filled('fecha_fin')
+            ? Carbon::parse($request->fecha_fin)
+            : $fechaInicio->copy()->addMonth();
+
+        $maxFin = $fechaInicio->copy()->addYear();
+
+        if ($fechaFin->gt($maxFin)) {
+            return back()
+                ->withInput()
+                ->withErrors(['fecha_fin' => 'La fecha de fin no puede ser mayor a un año desde la fecha de inicio.']);
+        }
+
+        return DB::transaction(function () use ($request, $rutaPDF, $rutaImagen, $fechaInicio, $fechaFin) {
+
+            $empresaData = [
+                'nombre_empresa' => $request->nombre_empresa,
+                'ruc' => $request->ruc,
+                'correo_electronico' => $request->correo_electronico,
+                'telefono' => $request->telefono,
+                'responsable_representante' => $request->input('responsable_representante'),
+                'direccion' => $request->input('direccion'),
+                'documento_validacion' => $rutaPDF,
+                'estado' => 'Pendiente',
+                'fecha_registro' => Carbon::now()->format('Y-m-d'),
+            ];
+
+            $empresaExistente = DB::table('registro_empresa_servicio')
+                ->where('ruc', $request->ruc)
+                ->orWhere('correo_electronico', $request->correo_electronico)
+                ->first();
+
+            if ($empresaExistente) {
+                $idEmpresa = $empresaExistente->id_empresa_servicio ?? $empresaExistente->id;
+                DB::table('registro_empresa_servicio')
+                    ->where('id_empresa_servicio', $idEmpresa)
+                    ->update($empresaData);
+            } else {
+                $idEmpresa = DB::table('registro_empresa_servicio')->insertGetId($empresaData);
+            }
+
+            DB::table('servicios_empresa')->insert([
+                'id_empresa_servicio' => $idEmpresa,
+                'nombre_servicio' => $request->nombre_servicio,
+                'descripcion' => $request->descripcion,
+                'categoria' => $request->categoria,
+                'ubicacion_ciudad' => $request->input('ubicacion_ciudad'),
+                'telefono_contacto' => $request->input('telefono_contacto'),
+                'redes_sociales' => $request->input('redes_sociales'),
+                'correo_contacto' => $request->input('correo_contacto'),
+                'direccion_atencion' => $request->input('direccion_atencion'),
+                'imagen_servicio' => $rutaImagen,
+                'horario_atencion' => $request->input('horario_atencion'),
+                'estado' => 'Pendiente',
+                'fecha_inicio' => $fechaInicio->format('Y-m-d'),
+                'fecha_fin' => $fechaFin->format('Y-m-d'),
+                'fecha_registro' => Carbon::now()->format('Y-m-d'),
+            ]);
+
+            return redirect()->back()->with('success', 'Servicio registrado correctamente');
+
+        });
 
     }
 
