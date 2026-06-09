@@ -234,8 +234,12 @@
 
             <hr class="my-5">
 
+            @php
+                $rol = session('usuario')->rol ?? null;
+            @endphp
 
-            <div class="row">
+            @if($rol !== 'Analista')
+                <div class="row">
 
                 <!-- APROBAR -->
 
@@ -255,6 +259,8 @@
                                 action="{{ url('admin/aprobar-producto/'.$producto->id_empresa_producto) }}"
                                 method="POST"
                                 enctype="multipart/form-data"
+                                class="confirm-password-action"
+                                data-confirm-message="Aprobar este producto?"
                             >
 
                                 @csrf
@@ -289,45 +295,47 @@
                 </div>
 
 
-                <!-- RECHAZAR -->
+                    <!-- RECHAZAR -->
 
-                <div class="col-md-6">
+                    <div class="col-md-6">
 
-                    <div class="card border-danger">
+                        <div class="card border-danger">
 
-                        <div class="card-body">
+                            <div class="card-body">
 
-                            <h5 class="fw-bold text-danger mb-3">
-
-                                Rechazar Producto
-
-                            </h5>
-
-                            <form
-                                action="{{ url('admin/rechazar-producto/'.$producto->id_empresa_producto) }}"
-                                method="POST"
-                                onsubmit="return confirm('¿Deseas rechazar este producto? Si / No');"
-                            >
-
-                                @csrf
-
-                                <button
-                                    class="btn btn-danger w-100"
-                                >
+                                <h5 class="fw-bold text-danger mb-3">
 
                                     Rechazar Producto
 
-                                </button>
+                                </h5>
 
-                            </form>
+                                <form
+                                    action="{{ url('admin/rechazar-producto/'.$producto->id_empresa_producto) }}"
+                                    method="POST"
+                                    class="confirm-password-action"
+                                    data-confirm-message="Rechazar este producto?"
+                                >
+
+                                    @csrf
+
+                                    <button
+                                        class="btn btn-danger w-100"
+                                    >
+
+                                        Rechazar Producto
+
+                                    </button>
+
+                                </form>
+
+                            </div>
 
                         </div>
-
                     </div>
 
                 </div>
-
             </div>
+            @endif
 
         </div>
 

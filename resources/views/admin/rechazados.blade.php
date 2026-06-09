@@ -53,7 +53,7 @@
                                 {{ $fecha ? \Carbon\Carbon::parse($fecha)->format('d/m/Y') : 'N/A' }}
                             </td>
                             <td>
-                                <form action="{{ url('admin/restaurar/' . ($empresa->id_rechazado ?? $empresa->id_empresa)) }}" method="POST" style="display:inline-block;">
+                                <form action="{{ url('admin/restaurar/' . ($empresa->id_rechazado ?? $empresa->id_empresa)) }}" method="POST" class="confirm-password-action" data-confirm-message="Restaurar este registro?" style="display:inline-block;">
                                     @csrf
                                     <button type="submit" class="btn btn-success btn-sm">Restaurar</button>
                                 </form>

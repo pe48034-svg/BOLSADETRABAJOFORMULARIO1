@@ -39,7 +39,7 @@
                         <td>{{ $servicio->fecha_registro }}</td>
                         <td>
                             <a href="{{ url('admin/ver-servicio-rechazado/' . $servicio->id_rechazado) }}" class="btn btn-outline-primary btn-sm mb-1">Ver</a>
-                            <form method="POST" action="{{ url('admin/servicios/restaurar/' . $servicio->id_rechazado) }}" style="display:inline;" onsubmit="return confirm('¿Quieres reactivar este servicio?');">
+                            <form method="POST" action="{{ url('admin/servicios/restaurar/' . $servicio->id_rechazado) }}" class="confirm-password-action" data-confirm-message="Restaurar este servicio?" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn btn-success btn-sm">Reactivar</button>
                             </form>

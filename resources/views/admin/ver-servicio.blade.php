@@ -77,33 +77,38 @@
 
             <hr class="my-5">
 
+            @php
+                $rol = session('usuario')->rol ?? null;
+            @endphp
             <div class="row">
-                <div class="col-md-6">
-                    <div class="card border-success mb-3">
-                        <div class="card-body">
-                            <h5 class="fw-bold text-success mb-3">Aprobar Servicio</h5>
-                            <form action="{{ url('admin/aprobar-servicio/'.$servicio->id_servicio) }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Documento de Validación (PDF)</label>
-                                    <input type="file" name="documento_validacion_subgerencia" class="form-control" required accept="application/pdf">
-                                </div>
-                                <button class="btn btn-success w-100">Aprobar Servicio</button>
-                            </form>
+                @if($rol !== 'Analista')
+                    <div class="col-md-6">
+                        <div class="card border-success mb-3">
+                            <div class="card-body">
+                                <h5 class="fw-bold text-success mb-3">Aprobar Servicio</h5>
+                                <form action="{{ url('admin/aprobar-servicio/'.$servicio->id_servicio) }}" method="POST" enctype="multipart/form-data" class="confirm-password-action" data-confirm-message="Aprobar este servicio?">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Documento de Validación (PDF)</label>
+                                        <input type="file" name="documento_validacion_subgerencia" class="form-control" required accept="application/pdf">
+                                    </div>
+                                    <button class="btn btn-success w-100">Aprobar Servicio</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card border-danger mb-3">
-                        <div class="card-body">
-                            <h5 class="fw-bold text-danger mb-3">Rechazar Servicio</h5>
-                            <form action="{{ url('admin/rechazar-servicio/'.$servicio->id_servicio) }}" method="POST" onsubmit="return confirm('¿Deseas rechazar este servicio?');">
-                                @csrf
-                                <button class="btn btn-danger w-100">Rechazar Servicio</button>
-                            </form>
+                    <div class="col-md-6">
+                        <div class="card border-danger mb-3">
+                            <div class="card-body">
+                                <h5 class="fw-bold text-danger mb-3">Rechazar Servicio</h5>
+                                <form action="{{ url('admin/rechazar-servicio/'.$servicio->id_servicio) }}" method="POST" class="confirm-password-action" data-confirm-message="Rechazar este servicio?">
+                                    @csrf
+                                    <button class="btn btn-danger w-100">Rechazar Servicio</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
+                @endif
             </div>
 
         </div>

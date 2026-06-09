@@ -4,360 +4,123 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BolsaTrabajoController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\Admin\BolsaController;
+use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\PostulanteController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ServiceController;
-use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\Analista\IndicatorsController;
 
-// RUTA TEMPORAL PARA REPARAR COLUMNA ESTADO
-Route::get('/admin/repair-database', function () {
-    try {
-        DB::statement('ALTER TABLE `empresas_producto_aprobadas` MODIFY COLUMN `estado` VARCHAR(50) NOT NULL');
-        DB::statement('ALTER TABLE `productos_publicos` MODIFY COLUMN `estado` VARCHAR(50) NOT NULL');
-        return response()->json([
-            'success' => true,
-            'message' => 'Base de datos reparada correctamente. Puedes desactivar publicaciones ahora.'
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage()
-        ], 500);
-    }
-});
-
-Route::get(
-    '/',
-    function () {
-        return view('publicidad.porvenir-produce');
-    }
-);
-
-Route::get(
-    '/publicidad',
-    function () {
-        return redirect('/publicidad/bolsa-trabajo');
-    }
-);
-
-Route::get(
-    '/publicidad/bolsa-trabajo',
-    [BolsaTrabajoController::class, 'publicidadBolsaTrabajo']
-);
-
-Route::get(
-    '/publicidad/productos',
-    [ProductoController::class, 'publicidadProductos']
-);
-
-Route::get(
-    '/publicidad/productos/{id}',
-    [ProductoController::class, 'detalleProducto']
-);
-
-Route::get(
-    '/publicidad/servicios',
-    function () {
-        $servicios = DB::table('servicios_publicos')
-            ->select('servicios_publicos.*', 'id_publico_servicio as id')
-            ->where('estado', 'Publicado')
-            ->whereDate('fecha_fin', '>=', date('Y-m-d'))
-            ->orderByDesc('fecha_publicacion')
-            ->get();
-
-        return view('publicidad.servicios', compact('servicios'));
-    }
-);
-
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/validar-login', [AuthController::class, 'validar']);
-Route::get('/logout', [AuthController::class, 'logout']);
-
-Route::get(
-    '/registro-empresa',
-    function () {
-
-        return view(
-            'registroempresa.seleccion-publicacion'
-        );
-
-    }
-);
-
-Route::get('/registro/bolsa-trabajo', function () {
-    return view('registroempresa.registro-bolsa-trabajo');
-});
-
-Route::get('/registro/bolsa-trabajos', function () {
-    return redirect('/registro/bolsa-trabajo');
-});
-
-Route::post('/guardar-bolsa-trabajo', [BolsaTrabajoController::class, 'guardar']);
-
-Route::get('/admin/postulantes', [PostulanteController::class, 'postulantes']);
-Route::get('/admin/postulantes/ver/{id}', [PostulanteController::class, 'verPostulantes']);
-Route::get('/admin/postulante/cv/{id}', [PostulanteController::class, 'verCV']);
-Route::get('/admin/postulante/visualizar/{id}', [PostulanteController::class, 'visualizarCV']);
-Route::get('/admin/postulante/descargar/{id}', [PostulanteController::class, 'descargarCV']);
-Route::post('/admin/eliminar-documento/{id}', [BolsaController::class, 'eliminarDocumento']);
-Route::post('/admin/eliminar-publicacion/{id}', [BolsaController::class, 'eliminarPublicacion']);
-Route::get('/admin/postulantes/descargar-todos/{id}', [PostulanteController::class, 'descargarTodosCV']);
-
-Route::get('/admin/ver/{id}', [BolsaController::class, 'ver']);
-Route::get('/admin/validacion-formularios', [BolsaController::class, 'validacion']);
-Route::get('/admin/rechazados', [BolsaController::class, 'rechazados']);
-Route::get('/admin/bolsa-trabajo', [BolsaController::class, 'bolsaTrabajo']);
-Route::get('/admin/indicadores-bolsa', function () {
-    $postulacionesPorEmpresa = DB::table('publicaciones_publicas as p')
-        ->leftJoin('postulaciones as po', 'p.id_publica', '=', 'po.id_publica')
-        ->select(
-            DB::raw("COALESCE(NULLIF(TRIM(p.nombre_empresa), ''), 'Sin Empresa') as nombre_empresa"),
-            DB::raw('COUNT(po.id_postulacion) as total_postulados')
-        )
-        ->groupBy('p.nombre_empresa')
-        ->orderByDesc('total_postulados')
+// Publicidad
+Route::get('/', fn () => view('publicidad.porvenir-produce'));
+Route::get('/publicidad', fn () => redirect('/publicidad/bolsa-trabajo'));
+Route::get('/publicidad/bolsa-trabajo', [BolsaTrabajoController::class, 'publicidadBolsaTrabajo']);
+Route::get('/publicidad/productos', [ProductoController::class, 'publicidadProductos']);
+Route::get('/publicidad/productos/{id}', [ProductoController::class, 'detalleProducto']);
+Route::get('/publicidad/servicios', function () {
+    $servicios = DB::table('servicios_publicos')
+        ->select('servicios_publicos.*', 'id_publico_servicio as id')
+        ->where('estado', 'Publicado')
+        ->whereDate('fecha_fin', '>=', now()->format('Y-m-d'))
+        ->orderByDesc('fecha_publicacion')
         ->get();
 
-    return view('admin.indicadores-bolsa', compact('postulacionesPorEmpresa'));
+    return view('publicidad.servicios', compact('servicios'));
 });
 
-Route::get('/admin/indicadores-productos', function () {
-    return view('admin.indicadores-productos');
+// Autenticación
+Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'validar'])->name('login.validate');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Registro de empresa
+Route::get('/registro-empresa', fn () => view('registroempresa.seleccion-publicacion'));
+Route::get('/registro/bolsa-trabajo', fn () => view('registroempresa.registro-bolsa-trabajo'));
+Route::get('/registro/bolsa-trabajos', fn () => redirect('/registro/bolsa-trabajo'));
+Route::get('/registro/productos', fn () => view('registroempresa.registro-empresa-productos'));
+Route::get('/registro/servicios', fn () => view('registroempresa.registro-empresa-servicios'));
+Route::post('/guardar-bolsa-trabajo', [BolsaTrabajoController::class, 'guardar'])->name('registro.guardar-bolsa-trabajo');
+Route::post('/guardar-producto', [ProductoController::class, 'guardar'])->name('registro.guardar-producto');
+Route::post('/guardar-servicio', [ProductoController::class, 'guardarServicio'])->name('registro.guardar-servicio');
+
+// Bolsa de trabajo pública
+Route::get('/detalle-oferta/{id}', [BolsaTrabajoController::class, 'detalle'])->name('bolsa.detalle');
+Route::get('/postular/{id}', [BolsaTrabajoController::class, 'postular'])->name('bolsa.postular');
+Route::post('/guardar-postulacion/{id}', [BolsaTrabajoController::class, 'guardarPostulacion'])->name('bolsa.guardar-postulacion');
+
+// Admin
+Route::middleware('auth.admin')->prefix('admin')->group(function () {
+    Route::get('repair-database', function () {
+        try {
+            DB::statement('ALTER TABLE `empresas_producto_aprobadas` MODIFY COLUMN `estado` VARCHAR(50) NOT NULL');
+            DB::statement('ALTER TABLE `productos_publicos` MODIFY COLUMN `estado` VARCHAR(50) NOT NULL');
+            return response()->json([
+                'success' => true,
+                'message' => 'Base de datos reparada correctamente. Puedes desactivar publicaciones ahora.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    })->name('admin.repair-database');
+
+    Route::get('validacion-formularios', [BolsaController::class, 'validacion']);
+    Route::get('rechazados', [BolsaController::class, 'rechazados']);
+    Route::get('bolsa-trabajo', [BolsaController::class, 'bolsaTrabajo']);
+    Route::get('ver/{id}', [BolsaController::class, 'ver']);
+    Route::post('publicaciones/restaurar/{id}', [BolsaController::class, 'restaurarPublicacion']);
+    Route::get('publicaciones-desactivadas', [BolsaController::class, 'desactivados']);
+    Route::get('publicaciones-desactivadas/{id}', [BolsaController::class, 'verDesactivada']);
+    Route::post('eliminar-documento/{id}', [BolsaController::class, 'eliminarDocumento']);
+    Route::post('eliminar-publicacion/{id}', [BolsaController::class, 'eliminarPublicacion']);
+    Route::post('aprobar/{id}', [DocumentController::class, 'aprobar']);
+    Route::post('rechazar/{id}', [DocumentController::class, 'rechazar']);
+    Route::post('restaurar/{id}', [DocumentController::class, 'restaurar']);
+    Route::post('subir-documento/{id}', [DocumentController::class, 'subirDocumento']);
+    Route::post('confirm-password', [AuthController::class, 'confirmPassword']);
+
+    Route::get('indicadores-bolsa', [IndicatorsController::class, 'bolsa']);
+    Route::get('indicadores-productos', [IndicatorsController::class, 'productos']);
+    Route::get('indicadores-servicios', [IndicatorsController::class, 'servicios']);
+
+    Route::get('postulantes', [PostulanteController::class, 'postulantes']);
+    Route::get('postulantes/ver/{id}', [PostulanteController::class, 'verPostulantes']);
+    Route::get('postulante/cv/{id}', [PostulanteController::class, 'verCV']);
+    Route::get('postulante/visualizar/{id}', [PostulanteController::class, 'visualizarCV']);
+    Route::get('postulante/descargar/{id}', [PostulanteController::class, 'descargarCV']);
+    Route::get('postulantes/descargar-todos/{id}', [PostulanteController::class, 'descargarTodosCV']);
+
+    Route::get('formularios-productos', [ProductController::class, 'formulariosProductos']);
+    Route::get('ver-producto/{id}', [ProductController::class, 'verProducto']);
+    Route::get('productos', [ProductController::class, 'productos']);
+    Route::get('ver-producto-aprobado/{id}', [ProductController::class, 'verProductoAprobado']);
+    Route::post('productos/reactivar/{id}', [ProductController::class, 'reactivarProducto']);
+    Route::get('productos-rechazados', [ProductController::class, 'rechazados']);
+    Route::post('productos/restaurar/{id}', [ProductController::class, 'restaurar']);
+    Route::post('aprobar-producto/{id}', [ProductController::class, 'aprobarProducto']);
+    Route::post('rechazar-producto/{id}', [ProductController::class, 'rechazarProducto']);
+    Route::delete('eliminar-producto/{id}', [ProductController::class, 'eliminarProducto']);
+    Route::delete('borrar-producto/{id}', [ProductController::class, 'borrarProducto']);
+    Route::get('desactivar-vencidos', [ProductController::class, 'desactivarVencidos']);
+
+    Route::get('formularios-servicios', [ServiceController::class, 'formulariosServicios']);
+    Route::get('ver-servicio/{id}', [ServiceController::class, 'verServicio']);
+    
+    // Usuarios administrativos (crear Analista / Gestor Operativo)
+    Route::get('usuarios/crear', [\App\Http\Controllers\Admin\UserController::class, 'create']);
+    Route::post('usuarios', [\App\Http\Controllers\Admin\UserController::class, 'store']);
+
+    Route::post('aprobar-servicio/{id}', [ServiceController::class, 'aprobarServicio']);
+    Route::post('rechazar-servicio/{id}', [ServiceController::class, 'rechazarServicio']);
+    Route::post('servicios/restaurar/{id}', [ServiceController::class, 'restaurarServicio']);
+    Route::get('publicaciones-servicios', [ServiceController::class, 'publicacionesServicios']);
+    Route::get('ver-publicacion-servicio/{id}', [ServiceController::class, 'verPublicacionServicio']);
+    Route::post('publicaciones-servicios/desactivar/{id}', [ServiceController::class, 'desactivarPublicacionServicio']);
+    Route::post('publicaciones-servicios/reactivar/{id}', [ServiceController::class, 'reactivarPublicacionServicio']);
+    Route::delete('publicaciones-servicios/borrar/{id}', [ServiceController::class, 'borrarPublicacionServicio']);
+    Route::get('ver-servicio-rechazado/{id}', [ServiceController::class, 'verServicioRechazado']);
+    Route::get('servicios-rechazados', [ServiceController::class, 'rechazados']);
 });
-
-Route::get('/admin/indicadores-servicios', function () {
-    return view('admin.indicadores-servicios');
-});
-/*
-|--------------------------------------------------------------------------
-| APROBAR
-|--------------------------------------------------------------------------
-*/
-
-Route::post(
-    '/admin/aprobar/{id}',
-    [\App\Http\Controllers\Admin\DocumentController::class, 'aprobar']
-);
-
-/*
-|--------------------------------------------------------------------------
-| RECHAZAR
-|--------------------------------------------------------------------------
-*/
-
-Route::post(
-    '/admin/rechazar/{id}',
-    [\App\Http\Controllers\Admin\DocumentController::class, 'rechazar']
-);
-
-Route::post(
-    '/admin/restaurar/{id}',
-    [\App\Http\Controllers\Admin\DocumentController::class, 'restaurar']
-);
-
-Route::post('/admin/subir-documento/{id}', [\App\Http\Controllers\Admin\DocumentController::class, 'subirDocumento']);
-
-// =====================================================
-// BOLSA DE TRABAJO PUBLICA
-// =====================================================
-
-Route::get(
-    '/detalle-oferta/{id}',
-    [BolsaTrabajoController::class, 'detalle']
-);
-
-Route::get(
-    '/postular/{id}',
-    [BolsaTrabajoController::class, 'postular']
-);
-
-Route::post(
-
-    '/guardar-postulacion/{id}',
-
-    [BolsaTrabajoController::class,
-    'guardarPostulacion']
-
-);
-
-// =====================================================
-// POSTULANTES ADMIN
-// =====================================================
-
-Route::get('/admin/postulantes', [PostulanteController::class, 'postulantes']);
-Route::get('/admin/postulantes/ver/{id}', [PostulanteController::class, 'verPostulantes']);
-Route::get('/admin/postulante/cv/{id}', [PostulanteController::class, 'verCV']);
-Route::get('/admin/postulante/visualizar/{id}', [PostulanteController::class, 'visualizarCV']);
-Route::get('/admin/postulante/descargar/{id}', [PostulanteController::class, 'descargarCV']);
-Route::post('/admin/eliminar-documento/{id}', [BolsaController::class, 'eliminarDocumento']);
-Route::get('/admin/postulantes/descargar-todos/{id}', [PostulanteController::class, 'descargarTodosCV']);
-
-// =====================================================
-// PRODUCTOS
-// =====================================================
-
-
-// =====================================================
-// FORMULARIO PRODUCTOS
-// =====================================================
-
-Route::get(
-
-    '/registro/productos',
-
-    function () {
-
-        return view(
-            'registroempresa.registro-empresa-productos'
-        );
-
-    }
-
-);
-
-Route::get(
-
-    '/registro/servicios',
-
-    function () {
-
-        return view(
-            'registroempresa.registro-empresa-servicios'
-        );
-
-    }
-
-);
-
-
-// =====================================================
-// GUARDAR PRODUCTO
-// =====================================================
-
-Route::post(
-
-    '/guardar-producto',
-
-    [ProductoController::class,
-    'guardar']
-
-);
-
-Route::post(
-
-    '/guardar-servicio',
-
-    [ProductoController::class,
-    'guardarServicio']
-
-);
-
-
-// =====================================================
-// FORMULARIOS PRODUCTOS ADMIN
-// =====================================================
-
-Route::get('/admin/formularios-productos', [ProductController::class, 'formulariosProductos']);
-
-
-// =====================================================
-// VER PRODUCTO PENDIENTE
-// =====================================================
-
-Route::get('/admin/ver-producto/{id}', [ProductController::class, 'verProducto']);
-
-// =====================================================
-// PRODUCTOS APROBADOS
-// =====================================================
-
-Route::get('/admin/productos', [ProductController::class, 'productos']);
-
-Route::get('/admin/ver-producto-aprobado/{id}', [ProductController::class, 'verProductoAprobado']);
-
-Route::post('/admin/productos/reactivar/{id}', [ProductController::class, 'reactivarProducto']);
-
-// =====================================================
-// PRODUCTOS RECHAZADOS
-// =====================================================
-
-Route::get('/admin/productos-rechazados', [ProductController::class, 'rechazados']);
-
-Route::post('/admin/productos/restaurar/{id}', [ProductController::class, 'restaurar']);
-
-
-// =====================================================
-// SERVICIOS ADMIN
-// =====================================================
-
-Route::get('/admin/formularios-servicios', [ServiceController::class, 'formulariosServicios']);
-Route::get('/admin/ver-servicio/{id}', [ServiceController::class, 'verServicio']);
-Route::post('/admin/aprobar-servicio/{id}', [ServiceController::class, 'aprobarServicio']);
-Route::post('/admin/rechazar-servicio/{id}', [ServiceController::class, 'rechazarServicio']);
-Route::post('/admin/servicios/restaurar/{id}', [ServiceController::class, 'restaurarServicio']);
-Route::get('/admin/publicaciones-servicios', [ServiceController::class, 'publicacionesServicios']);
-Route::get('/admin/ver-publicacion-servicio/{id}', [ServiceController::class, 'verPublicacionServicio']);
-Route::post('/admin/publicaciones-servicios/desactivar/{id}', [ServiceController::class, 'desactivarPublicacionServicio']);
-Route::post('/admin/publicaciones-servicios/reactivar/{id}', [ServiceController::class, 'reactivarPublicacionServicio']);
-Route::delete('/admin/publicaciones-servicios/borrar/{id}', [ServiceController::class, 'borrarPublicacionServicio']);
-Route::get('/admin/ver-servicio-rechazado/{id}', [ServiceController::class, 'verServicioRechazado']);
-Route::get('/admin/servicios-rechazados', [ServiceController::class, 'rechazados']);
-
-
-// =====================================================
-// APROBAR PRODUCTO
-// =====================================================
-
-Route::post(
-
-    '/admin/aprobar-producto/{id}',
-
-    [\App\Http\Controllers\Admin\ProductController::class, 'aprobarProducto']
-
-);
-
-
-// =====================================================
-// RECHAZAR PRODUCTO
-// =====================================================
-
-Route::post(
-
-    '/admin/rechazar-producto/{id}',
-
-    [\App\Http\Controllers\Admin\ProductController::class, 'rechazarProducto']
-
-);
-
-// =====================================================
-// ELIMINAR PUBLICACIÓN
-// =====================================================
-
-Route::delete(
-
-    '/admin/eliminar-producto/{id}',
-
-    [\App\Http\Controllers\Admin\ProductController::class, 'eliminarProducto']
-
-);
-
-Route::delete(
-
-    '/admin/borrar-producto/{id}',
-
-    [\App\Http\Controllers\Admin\ProductController::class, 'borrarProducto']
-
-);
-
-// =====================================================
-// DESACTIVAR PRODUCTOS VENCIDOS
-// =====================================================
-
-Route::get(
-
-    '/admin/desactivar-vencidos',
-
-    [\App\Http\Controllers\Admin\ProductController::class, 'desactivarVencidos']
-
-);
-

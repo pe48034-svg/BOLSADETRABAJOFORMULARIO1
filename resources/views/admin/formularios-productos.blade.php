@@ -151,27 +151,29 @@
 
                                 </a>
 
+                                @if($rol !== 'Analista')
+                                    <!-- RECHAZAR -->
 
-                                <!-- RECHAZAR -->
-
-                                <form
-                                    action="{{ url('admin/rechazar-producto/'.$producto->id_empresa_producto) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('¿Deseas rechazar este producto?')"
-                                >
-
-                                    @csrf
-
-                                    <button
-                                        type="submit"
-                                        class="btn btn-danger btn-sm"
+                                    <form
+                                        action="{{ url('admin/rechazar-producto/'.$producto->id_empresa_producto) }}"
+                                        method="POST"
+                                        class="confirm-password-action"
+                                        data-confirm-message="¿Deseas rechazar este producto?"
                                     >
 
-                                        Rechazar
+                                        @csrf
 
-                                    </button>
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger btn-sm"
+                                        >
 
-                                </form>
+                                            Rechazar
+
+                                        </button>
+
+                                    </form>
+                                @endif
 
                             </div>
 

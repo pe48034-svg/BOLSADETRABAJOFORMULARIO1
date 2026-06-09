@@ -71,21 +71,21 @@
                             <a href="{{ url('admin/ver-publicacion-servicio/' . $servicio->id_publico_servicio) }}" class="btn btn-outline-primary btn-sm mb-1">Ver</a>
 
                             @if($servicio->estado === 'Desactivado')
-                                <form action="{{ url('admin/publicaciones-servicios/reactivar/' . $servicio->id_publico_servicio) }}" method="POST" style="display:inline;">
+                                <form action="{{ url('admin/publicaciones-servicios/reactivar/' . $servicio->id_publico_servicio) }}" method="POST" class="confirm-password-action" data-confirm-message="Reactivar esta publicación?" style="display:inline;">
                                     @csrf
                                     <button type="submit" class="btn btn-success btn-sm mb-1">Reactivar</button>
                                 </form>
                             @else
-                                <form action="{{ url('admin/publicaciones-servicios/desactivar/' . $servicio->id_publico_servicio) }}" method="POST" style="display:inline;">
+                                <form action="{{ url('admin/publicaciones-servicios/desactivar/' . $servicio->id_publico_servicio) }}" method="POST" class="confirm-password-action" data-confirm-message="Desactivar esta publicación?" style="display:inline;">
                                     @csrf
-                                    <button type="submit" class="btn btn-warning btn-sm mb-1" onclick="return confirm('¿Deseas desactivar esta publicación?');">Desactivar</button>
+                                    <button type="submit" class="btn btn-warning btn-sm mb-1">Desactivar</button>
                                 </form>
                             @endif
 
-                            <form action="{{ url('admin/publicaciones-servicios/borrar/' . $servicio->id_publico_servicio) }}" method="POST" style="display:inline;">
+                            <form action="{{ url('admin/publicaciones-servicios/borrar/' . $servicio->id_publico_servicio) }}" method="POST" class="confirm-password-action" data-confirm-message="Eliminar permanentemente esta publicación?" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas eliminar esta publicación permanentemente?');">Borrar</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Borrar</button>
                             </form>
                         </td>
                     </tr>

@@ -26,6 +26,9 @@
 
                 </div>
 
+                @php
+                    $rol = session('usuario')->rol ?? null;
+                @endphp
                 <div class="d-flex gap-2">
 
                     <a
@@ -37,15 +40,13 @@
 
                     </a>
 
-                    <button
-                        type="button"
-                        class="btn btn-danger"
-                        onclick="confirmarEliminar({{ $producto->id_aprobado }}, '{{ $producto->nombre_producto }}')"
-                    >
-
-                        Eliminar Publicación
-
-                    </button>
+                    @if($rol !== 'Analista')
+                        <form action="{{ url('admin/eliminar-producto/'.$producto->id_aprobado) }}" method="POST" class="confirm-password-action">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Eliminar Publicación</button>
+                        </form>
+                    @endif
 
                 </div>
 
@@ -179,18 +180,5 @@
 
 </div>
 
-<script>
-    function confirmarEliminar(id, nombre) {
-        if (confirm(`¿Estás seguro de que deseas eliminar la publicación "${nombre}"? Esta acción no se puede deshacer.`)) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/admin/eliminar-producto/${id}`;
-            form.innerHTML = `@csrf
-                <input type="hidden" name="_method" value="DELETE">`;
-            document.body.appendChild(form);
-            form.submit();
-        }
-    }
-</script>
 
 @endsection

@@ -92,6 +92,19 @@
             <li class="nav-item mb-2">
 
                 <a
+                    href="{{ url('admin/publicaciones-desactivadas') }}"
+                    class="nav-link text-dark"
+                >
+                    <i class="bi bi-archive"></i>
+
+                    Publicaciones Desactivadas
+                </a>
+
+            </li>
+
+            <li class="nav-item mb-2">
+
+                <a
                     href="#"
                     class="nav-link text-dark"
                 >

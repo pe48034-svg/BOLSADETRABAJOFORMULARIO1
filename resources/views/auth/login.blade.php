@@ -56,7 +56,7 @@
 
         @endif
 
-        <form action="{{ url('validar-login') }}"
+          <form action="{{ url('login') }}"
               method="POST">
 
             @csrf

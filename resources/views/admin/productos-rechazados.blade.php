@@ -54,7 +54,7 @@
                             @endif
                         </td>
                         <td>
-                            <form method="POST" action="{{ url('admin/productos/restaurar/' . $producto->id_rechazado) }}" style="display:inline;" onsubmit="return confirm('¿Quieres restaurar este producto? Si / No');">
+                            <form method="POST" action="{{ url('admin/productos/restaurar/' . $producto->id_rechazado) }}" class="confirm-password-action" data-confirm-message="Restaurar este producto?" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-warning">
                                     Restaurar

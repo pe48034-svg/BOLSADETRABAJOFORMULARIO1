@@ -2,11 +2,10 @@
 
 @section('content')
 
-<h2 class="fw-bold mb-4">
-
-    Bolsa de Trabajo
-
-</h2>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
+    <h2 class="fw-bold mb-0">Bolsa de Trabajo</h2>
+    <a href="{{ url('admin/publicaciones-desactivadas') }}" class="btn btn-outline-secondary">Ver publicaciones desactivadas</a>
+</div>
 
 @if(session('success'))
     <div class="alert alert-success">
@@ -123,7 +122,7 @@
                             >
                                 Ver detalles
                             </button>
-                            <form action="{{ url('admin/eliminar-publicacion/'.$empresa->id_aprobado) }}" method="POST" onsubmit="return confirm('¿Eliminar esta publicación aprobada? Esta acción no se puede deshacer.');">
+                            <form action="{{ url('admin/eliminar-publicacion/'.$empresa->id_aprobado) }}" method="POST" class="confirm-password-action" data-confirm-message="Eliminar esta publicación? Esta acción no se puede deshacer.">
                                 @csrf
                                 <button type="submit" class="btn btn-danger btn-sm">Eliminar publicación</button>
                             </form>
@@ -219,7 +218,7 @@
                                 @endif
                                 @if(!empty($empresa->documento_aprobacion_pdf))
                                     <a href="{{ asset($empresa->documento_aprobacion_pdf) }}" target="_blank" class="btn btn-primary btn-sm w-100 mb-2">📄 Doc. aprobado</a>
-                                    <form action="{{ url('admin/eliminar-documento/'.$empresa->id_aprobado) }}" method="POST" class="d-grid">
+                                    <form action="{{ url('admin/eliminar-documento/'.$empresa->id_aprobado) }}" method="POST" class="confirm-password-action d-grid" data-confirm-message="Eliminar el documento aprobado? Esta acción no se puede deshacer.">
                                         @csrf
                                         <button type="submit" class="btn btn-danger btn-sm">Eliminar documento</button>
                                     </form>
@@ -230,7 +229,7 @@
                     <div class="col-12">
                         <div class="bg-white border rounded-4 p-4">
                             <h6 class="fw-semibold mb-3">Subir documento de validación</h6>
-                            <form action="{{ url('admin/subir-documento/'.$empresa->id_aprobado) }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ url('admin/subir-documento/'.$empresa->id_aprobado) }}" method="POST" enctype="multipart/form-data" class="confirm-password-action" data-confirm-message="Subir o reemplazar el documento de validación?">
                                 @csrf
                                 <div class="mb-3">
                                     <input type="file" name="documento_pdf" class="form-control" accept="application/pdf" required>

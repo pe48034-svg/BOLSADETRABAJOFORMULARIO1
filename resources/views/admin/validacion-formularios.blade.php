@@ -2,6 +2,10 @@
 
 @section('content')
 
+    @php
+        $rol = session('usuario')->rol ?? null;
+    @endphp
+
     <h1 class="fw-bold mb-4">
         Validación de Formularios de Bolsa de Trabajo
     </h1>
@@ -49,14 +53,16 @@
                             </td>
                             <td>
                                 <a href="{{ url('admin/ver/'.$empresa->id_empresa) }}" class="btn btn-primary btn-sm">Ver</a>
-                                <form action="{{ url('admin/aprobar/'.$empresa->id_empresa) }}" method="POST" style="display:inline-block;">
-                                    @csrf
-                                    <button class="btn btn-success btn-sm">Aprobar</button>
-                                </form>
-                                <form action="{{ url('admin/rechazar/'.$empresa->id_empresa) }}" method="POST" style="display:inline-block;">
-                                    @csrf
-                                    <button class="btn btn-danger btn-sm">Rechazar</button>
-                                </form>
+                                @if($rol !== 'Analista')
+                                    <form action="{{ url('admin/aprobar/'.$empresa->id_empresa) }}" method="POST" style="display:inline-block;" class="confirm-password-action" data-confirm-message="Aprobar esta solicitud?">
+                                        @csrf
+                                        <button class="btn btn-success btn-sm">Aprobar</button>
+                                    </form>
+                                    <form action="{{ url('admin/rechazar/'.$empresa->id_empresa) }}" method="POST" style="display:inline-block;" class="confirm-password-action" data-confirm-message="Rechazar esta solicitud?">
+                                        @csrf
+                                        <button class="btn btn-danger btn-sm">Rechazar</button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
 
@@ -126,14 +132,16 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <form method="POST" action="{{ url('admin/aprobar/'.$empresa->id_empresa) }}">
-                                            @csrf
-                                            <button class="btn btn-success">Aprobar</button>
-                                        </form>
-                                        <form method="POST" action="{{ url('admin/rechazar/'.$empresa->id_empresa) }}">
-                                            @csrf
-                                            <button class="btn btn-danger">Rechazar</button>
-                                        </form>
+                                        @if($rol !== 'Analista')
+                                            <form method="POST" action="{{ url('admin/aprobar/'.$empresa->id_empresa) }}" class="confirm-password-action" data-confirm-message="Aprobar esta solicitud?">
+                                                @csrf
+                                                <button class="btn btn-success">Aprobar</button>
+                                            </form>
+                                            <form method="POST" action="{{ url('admin/rechazar/'.$empresa->id_empresa) }}" class="confirm-password-action" data-confirm-message="Rechazar esta solicitud?">
+                                                @csrf
+                                                <button class="btn btn-danger">Rechazar</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

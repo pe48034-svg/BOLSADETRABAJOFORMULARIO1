@@ -351,12 +351,12 @@
                                     👁️ Ver
                                 </a>
                                 @if(strtolower($servicio->estado ?? 'pendiente') !== 'desactivado')
-                                    <form action="{{ url('admin/servicios/desactivar/'.$servicio->id) }}" method="POST" onsubmit="return confirm('¿Desactivar este servicio?');" style="display:inline;">
+                                    <form action="{{ url('admin/servicios/desactivar/'.$servicio->id) }}" method="POST" class="confirm-password-action" data-confirm-message="Desactivar este servicio?" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn-sm-custom btn-desactivar">🔒 Desactivar</button>
                                     </form>
                                 @else
-                                    <form action="{{ url('admin/servicios/reactivar/'.$servicio->id) }}" method="POST" onsubmit="return confirm('¿Reactivar este servicio?');" style="display:inline;">
+                                    <form action="{{ url('admin/servicios/reactivar/'.$servicio->id) }}" method="POST" class="confirm-password-action" data-confirm-message="Reactivar este servicio?" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn-sm-custom btn-reactivar">🔓 Reactivar</button>
                                     </form>

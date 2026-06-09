@@ -46,7 +46,7 @@
                                 <a href="{{ url('admin/ver-producto-aprobado/'.$producto->id_aprobado) }}" class="btn btn-sm btn-primary">
                                     Ver Detalle
                                 </a>
-                                <form action="{{ url('admin/productos/reactivar/'.$producto->id_aprobado) }}" method="POST" onsubmit="return confirm('¿Reactivar esta publicación? Volverá a ser visible en el portal público.');">
+                                <form action="{{ url('admin/productos/reactivar/'.$producto->id_aprobado) }}" method="POST" class="confirm-password-action" data-confirm-message="Reactivar esta publicación? Volverá a ser visible en el portal público.">
                                     @csrf
                                     <button type="submit" class="btn btn-success btn-sm">Reactivar</button>
                                 </form>

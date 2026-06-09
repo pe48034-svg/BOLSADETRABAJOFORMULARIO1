@@ -372,18 +372,18 @@
                                     👁️ Ver
                                 </a>
                                 @if(strtolower($producto->estado ?? '') !== 'desactivado')
-                                    <form action="{{ url('admin/eliminar-producto/'.$producto->id_aprobado) }}" method="POST" onsubmit="return confirm('¿Desactivar esta publicación?');" style="display:inline;">
+                                    <form action="{{ url('admin/eliminar-producto/'.$producto->id_aprobado) }}" method="POST" class="confirm-password-action" data-confirm-message="Desactivar esta publicación?" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-sm-custom btn-desactivar">🔒 Desactivar</button>
                                     </form>
                                 @else
-                                    <form action="{{ url('admin/productos/reactivar/'.$producto->id_aprobado) }}" method="POST" onsubmit="return confirm('¿Reactivar esta publicación?');" style="display:inline;">
+                                    <form action="{{ url('admin/productos/reactivar/'.$producto->id_aprobado) }}" method="POST" class="confirm-password-action" data-confirm-message="Reactivar esta publicación?" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn-sm-custom btn-reactivar">🔓 Reactivar</button>
                                     </form>
                                 @endif
-                                <form action="{{ url('admin/borrar-producto/'.$producto->id_aprobado) }}" method="POST" onsubmit="return confirm('¿Eliminar permanentemente esta publicación?');" style="display:inline;">
+                                <form action="{{ url('admin/borrar-producto/'.$producto->id_aprobado) }}" method="POST" class="confirm-password-action" data-confirm-message="Eliminar permanentemente esta publicación?" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-sm-custom btn-borrar">🗑️ Borrar</button>

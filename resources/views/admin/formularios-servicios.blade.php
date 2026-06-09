@@ -39,10 +39,12 @@
                             <div class="d-flex gap-2 flex-wrap">
                                 <a href="{{ url('admin/ver-servicio/'.$servicio->id_servicio) }}" class="btn btn-primary btn-sm">Ver</a>
                                 <a href="{{ url('admin/ver-servicio/'.$servicio->id_servicio) }}" class="btn btn-success btn-sm">Ver / Aprobar</a>
-                                <form action="{{ url('admin/rechazar-servicio/'.$servicio->id_servicio) }}" method="POST" onsubmit="return confirm('¿Deseas rechazar este servicio?')" style="display:inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm">Rechazar</button>
-                                </form>
+                                @if($rol !== 'Analista')
+                                    <form action="{{ url('admin/rechazar-servicio/'.$servicio->id_servicio) }}" method="POST" class="confirm-password-action" data-confirm-message="¿Deseas rechazar este servicio?" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger btn-sm">Rechazar</button>
+                                    </form>
+                                @endif
                             </div>
                         </td>
                     </tr>
