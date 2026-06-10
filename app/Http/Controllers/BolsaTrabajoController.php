@@ -41,11 +41,16 @@ class BolsaTrabajoController extends Controller
         return view('bolsa-trabajo.index', compact('ofertas', 'categorias'));
     }
 
-    public function publicidadBolsaTrabajo()
+    public function publicidadBolsaTrabajo(Request $request)
     {
-        $ofertas = $this->bolsaTrabajoService->listPublicJobs(['fecha_limite_postulacion' => now()->startOfDay()]);
+        $filters = $request->only(['buscar', 'modalidad', 'categoria', 'estado']);
+        $filters['estado'] = in_array($filters['estado'] ?? null, ['publicadas', 'vencidas'], true)
+            ? $filters['estado']
+            : 'publicadas';
 
-        return view('publicidad.bolsa-trabajo', compact('ofertas'));
+        $ofertas = $this->bolsaTrabajoService->listPublicJobs($filters);
+
+        return view('publicidad.bolsa-trabajo', compact('ofertas', 'filters'));
     }
 
     public function detalle(int $id)

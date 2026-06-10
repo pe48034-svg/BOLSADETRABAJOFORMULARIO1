@@ -11,6 +11,23 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
 
+@php
+    $query = request()->except('estado');
+    $baseUrl = url('/admin/publicaciones-servicios');
+    $allUrl = $baseUrl . (count($query) ? '?' . http_build_query($query) : '');
+    $publishedUrl = $baseUrl . (count($query) ? '?' . http_build_query(array_merge($query, ['estado' => 'Publicado'])) : '?estado=Publicado');
+    $disabledUrl = $baseUrl . (count($query) ? '?' . http_build_query(array_merge($query, ['estado' => 'Desactivado'])) : '?estado=Desactivado');
+    $currentEstado = $filters['estado'] ?? '';
+@endphp
+
+<div class="mb-4">
+    <div class="btn-group" role="group" aria-label="Filtrar publicaciones por estado">
+        <a href="{{ $allUrl }}" class="btn {{ $currentEstado === '' ? 'btn-primary text-white' : 'btn-outline-secondary' }}">Todos</a>
+        <a href="{{ $publishedUrl }}" class="btn {{ $currentEstado === 'Publicado' ? 'btn-primary text-white' : 'btn-outline-secondary' }}">Publicado</a>
+        <a href="{{ $disabledUrl }}" class="btn {{ $currentEstado === 'Desactivado' ? 'btn-primary text-white' : 'btn-outline-secondary' }}">No publicados</a>
+    </div>
+</div>
+
 <form method="GET" action="{{ url('/admin/publicaciones-servicios') }}" class="row g-3 mb-4">
     <div class="col-md-4">
         <label class="form-label">Buscar empresa o servicio</label>

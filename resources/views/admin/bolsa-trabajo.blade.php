@@ -3,8 +3,13 @@
 @section('content')
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
-    <h2 class="fw-bold mb-0">Bolsa de Trabajo</h2>
-    <a href="{{ url('admin/publicaciones-desactivadas') }}" class="btn btn-outline-secondary">Ver publicaciones desactivadas</a>
+    <div>
+        <h2 class="fw-bold mb-0">Bolsa de Trabajo</h2>
+        <div class="btn-group mt-3" role="group" aria-label="Filtrar publicaciones">
+            <a href="{{ url('admin/bolsa-trabajo') }}" class="btn btn-primary">Publicado</a>
+            <a href="{{ url('admin/publicaciones-desactivadas') }}" class="btn btn-outline-secondary">No publicados</a>
+        </div>
+    </div>
 </div>
 
 @if(session('success'))

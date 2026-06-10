@@ -17,9 +17,14 @@
                 <p class="text-muted">
                     Publica ofertas laborales y recibe postulaciones de candidatos.
                 </p>
-                <a href="{{ url('publicidad/bolsa-trabajo') }}" class="btn btn-primary w-100">
-                    Ver publicidad de bolsa de trabajo
-                </a>
+                <div class="d-grid gap-2">
+                    <a href="{{ url('publicidad/bolsa-trabajo') }}" class="btn btn-primary w-100">
+                        Ver publicidad de bolsa de trabajo
+                    </a>
+                    <a href="{{ url('publicidad/bolsa-trabajo?estado=vencidas') }}" class="btn btn-outline-secondary w-100">
+                        Ver ofertas vencidas
+                    </a>
+                </div>
             </div>
         </div>
     </div>

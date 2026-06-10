@@ -13,9 +13,14 @@
 
 <div class="container py-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Publicaciones desactivadas</h2>
-        <a href="{{ url('admin/bolsa-trabajo') }}" class="btn btn-outline-secondary">Volver a Publicaciones</a>
+    <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+        <div>
+            <h2 class="mb-0">Publicaciones desactivadas</h2>
+            <div class="btn-group mt-3" role="group" aria-label="Filtrar publicaciones">
+                <a href="{{ url('admin/bolsa-trabajo') }}" class="btn btn-outline-secondary">Publicado</a>
+                <a href="{{ url('admin/publicaciones-desactivadas') }}" class="btn btn-primary">No publicados</a>
+            </div>
+        </div>
     </div>
 
     <div class="card shadow-sm rounded-4">

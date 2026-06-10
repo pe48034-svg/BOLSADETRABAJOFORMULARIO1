@@ -215,11 +215,40 @@
     <p>Descubre las mejores oportunidades laborales en tu región</p>
 </div>
 
+@php
+    $estadoSeleccionado = request('estado', 'publicadas');
+    $query = request()->except('estado');
+    $baseUrl = url('/publicidad/bolsa-trabajo');
+    $publicadasUrl = $baseUrl . (count($query) ? '?' . http_build_query(array_merge($query, ['estado' => 'publicadas'])) : '?estado=publicadas');
+    $vencidasUrl = $baseUrl . (count($query) ? '?' . http_build_query(array_merge($query, ['estado' => 'vencidas'])) : '?estado=vencidas');
+    $tituloSeccion = $estadoSeleccionado === 'vencidas' ? 'Ofertas vencidas' : 'Ofertas publicadas';
+    $descripcionSeccion = $estadoSeleccionado === 'vencidas'
+        ? 'Estas ofertas ya han pasado su fecha límite de postulación.'
+        : 'Estas ofertas están abiertas y disponibles para postulación.';
+@endphp
+
+<div class="mb-4 text-center">
+    <nav class="nav nav-pills justify-content-center">
+        <a href="{{ $publicadasUrl }}" class="nav-link {{ $estadoSeleccionado === 'publicadas' ? 'active' : '' }}">Publicadas</a>
+        <a href="{{ $vencidasUrl }}" class="nav-link {{ $estadoSeleccionado === 'vencidas' ? 'active' : '' }}">Vencidas</a>
+    </nav>
+</div>
+
+<div class="mb-4 text-center">
+    <h2 class="fw-semibold">{{ $tituloSeccion }}</h2>
+    <p class="text-muted mb-0">{{ $descripcionSeccion }}</p>
+</div>
+
 @if($ofertas->isEmpty())
     <div class="empty-state">
         <div class="empty-state-icon">📭</div>
-        <h3>No hay ofertas disponibles</h3>
-        <p>En este momento no hay publicaciones activas de bolsa de trabajo. Vuelve pronto para ver nuevas oportunidades.</p>
+        <h3>{{ $estadoSeleccionado === 'vencidas' ? 'No hay ofertas vencidas' : 'No hay ofertas disponibles' }}</h3>
+        <p>
+            {{ $estadoSeleccionado === 'vencidas'
+                ? 'No hay publicaciones vencidas en este momento.'
+                : 'En este momento no hay publicaciones activas de bolsa de trabajo. Vuelve pronto para ver nuevas oportunidades.'
+            }}
+        </p>
     </div>
 @else
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-5">
@@ -237,6 +266,14 @@
                     @endif
 
                     <div class="card-body">
+                        @php
+                            $isVencida = \Carbon\Carbon::parse($oferta->fecha_limite_postulacion)->isPast();
+                        @endphp
+                        <div class="mb-2">
+                            <span class="badge {{ $isVencida ? 'bg-danger' : 'bg-success' }} text-white px-3 py-2">
+                                {{ $isVencida ? 'Vencida' : 'Activa' }}
+                            </span>
+                        </div>
                         <h5 class="titulo-oferta">{{ $oferta->titulo_puesto }}</h5>
                         <p class="empresa-nombre">{{ $oferta->nombre_empresa ?? 'Empresa' }}</p>
 

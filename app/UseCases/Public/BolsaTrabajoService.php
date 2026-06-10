@@ -71,8 +71,11 @@ class BolsaTrabajoService
             $query->where('categoria', $filters['categoria']);
         }
 
-        if (!empty($filters['fecha_limite_postulacion'])) {
-            $query->where('fecha_limite_postulacion', '>=', $filters['fecha_limite_postulacion']);
+        $estado = $filters['estado'] ?? null;
+        if ($estado === 'vencidas') {
+            $query->where('fecha_limite_postulacion', '<', now()->format('Y-m-d'));
+        } else {
+            $query->where('fecha_limite_postulacion', '>=', now()->format('Y-m-d'));
         }
 
         return $query->orderBy('fecha_publicacion_publica', 'desc')->get();
